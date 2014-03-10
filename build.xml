@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="crespo" basedir="." default="main">
+
+    <!-- Sets variables which can later be used -->
+    <property name="main.src.dir" value="src/main/java"/>
+    <property name="test.src.dir" value="src/test/java"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
+
+    <!-- Define the classpath which includes the 
+         jars and the classes after compiling -->
+    <path id="lib.class.path">
+        <fileset dir="${lib.dir}">
+            <include name="**/*.jar"/>
+        </fileset>
+        <pathelement location="${build.dir}"/>
+    </path>
+
+    <!-- Targets -->
+    <target name="init">
+        <mkdir dir="${build.dir}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+
+    <!-- Compile target -->
+    <target name="compile" depends="clean, init">
+        <echo message="Compiling main sources"/>
+        <javac srcdir="${main.src.dir}" destdir="${build.dir}" includeantruntime="false"/>
+
+        <echo message="Compiling test sources"/>
+        <javac srcdir="${test.src.dir}" destdir="${build.dir}" includeantruntime="false">
+            <classpath refid="lib.class.path"/>
+        </javac>
+    </target>
+
+    <!-- Run the JUnit Tests -->
+    <target name="junit" depends="compile">
+        <junit printsummary="false" fork="true" haltonfailure="yes">
+            <classpath refid="lib.class.path" />
+            <formatter type="plain" usefile="false"/>
+            <batchtest>
+                <fileset dir="${test.src.dir}"/>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!-- Main target -->
+    <target name="main" depends="compile, junit"/>
+</project>

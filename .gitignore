@@ -2,6 +2,7 @@
 .metadata
 .gradle
 bin/
+build/
 tmp/
 *.tmp
 *.bak
@@ -28,3 +29,7 @@ local.properties
 
 # TeXlipse plugin
 .texlipse
+
+# Eclipse project files
+.classpath
+.project
