@@ -1,4 +1,4 @@
-package ro.pub.cs.idp.crespo;
+package ro.pub.cs.elf.crespo;
 
 import junit.framework.TestCase;
 
