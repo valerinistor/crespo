@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.JFrame;
 
 import ro.pub.cs.elf.crespo.gui.Draw;
+import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class Crespo extends JFrame {
 
@@ -19,7 +20,7 @@ public class Crespo extends JFrame {
 	public static int width = 640;
 	public static int height = 480;
 
-	private IMediator mediator;
+	private Mediator mediator;
 	private final Draw picasso;
 
 	public Crespo() {
@@ -30,8 +31,12 @@ public class Crespo extends JFrame {
 		this.setSize(new Dimension(width, height));
 		this.setCenter();
 
-		picasso = new Draw(getContentPane());
-		picasso.paint();
+		this.mediator = new Mediator();
+		this.picasso = new Draw(getContentPane(), this.mediator);
+		this.picasso.paint();
+
+		this.mediator.registerDraw(picasso);
+
 		this.setVisible(true);
 	}
 

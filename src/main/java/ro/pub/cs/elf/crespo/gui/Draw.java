@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import ro.pub.cs.elf.crespo.app.Crespo;
+import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class Draw {
 
@@ -17,12 +18,12 @@ public class Draw {
 	private final StatusBar statusBar;
 	private final TransferTable transferTable;
 
-	public Draw(Container contentPane) {
+	public Draw(Container contentPane, Mediator mediator) {
 		this.contentPane = contentPane;
-		this.fileList = new FileList();
-		this.userList = new UserList();
+		this.fileList = new FileList(mediator);
+		this.userList = new UserList(mediator);
+		this.transferTable = new TransferTable(mediator);
 		this.statusBar = new StatusBar();
-		this.transferTable = new TransferTable();
 	}
 
 	public void paint() {

@@ -3,7 +3,9 @@ package ro.pub.cs.elf.crespo.gui;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-public abstract class AbstractList<E> extends JList<E> {
+import ro.pub.cs.elf.crespo.app.ICommand;
+
+public abstract class AbstractList<E> extends JList<E> implements ICommand {
 
 	private static final long serialVersionUID = -5945358337758113651L;
 	private final DefaultListModel<E> model;
