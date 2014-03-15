@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -26,21 +27,30 @@ public class Draw {
 	}
 
 	public void paint() {
+
 		JPanel left = new JPanel(new BorderLayout());
+
 		JScrollPane filePane = new JScrollPane(fileList);
+		filePane.setBorder(BorderFactory.createTitledBorder("Files"));
+
 		JScrollPane transferPane = new JScrollPane(transferTable);
+		transferTable.setFillsViewportHeight(true);
+		transferPane.setBorder(BorderFactory.createTitledBorder("Transfers"));
 		transferPane.setPreferredSize(new Dimension(0, Crespo.height / 3));
 
+		// Add file panel to CENTER position in order to fill available space.
 		left.add(filePane, BorderLayout.CENTER);
 		left.add(transferPane, BorderLayout.SOUTH);
 
-		// Add panel to CENTER position in order to fill available space.
-		contentPane.add(left, BorderLayout.CENTER);
-
 		JScrollPane userPane = new JScrollPane(userList);
 		userPane.setPreferredSize(new Dimension(Crespo.width / 4, 0));
-		contentPane.add(userPane, BorderLayout.EAST);
+		userPane.setBorder(BorderFactory.createTitledBorder("Users"));
 
+		statusBar.setBorder(BorderFactory.createTitledBorder("Status"));
+
+		// Add left panel to CENTER position in order to fill available space.
+		contentPane.add(left, BorderLayout.CENTER);
+		contentPane.add(userPane, BorderLayout.EAST);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 	}
 
