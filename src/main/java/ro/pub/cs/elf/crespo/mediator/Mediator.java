@@ -5,17 +5,20 @@ import java.util.List;
 import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
+import ro.pub.cs.elf.crespo.gui.CrespoWorker;
 import ro.pub.cs.elf.crespo.gui.Draw;
 
 public class Mediator {
 
 	private Draw draw;
 	private final User me;
+	private CrespoWorker worker;
 
 	// TODO add network and web service layer
 
 	public Mediator() {
 		this.me = new User("_me_");
+		this.worker = new CrespoWorker(this);
 	}
 
 	public void registerDraw(Draw draw) {
@@ -27,6 +30,7 @@ public class Mediator {
 	}
 
 	public void addFiles(List<File> files) {
+		this.draw.getFileList().clearModel();
 		this.draw.getFileList().addFiles(files);
 	}
 
@@ -40,5 +44,9 @@ public class Mediator {
 
 	public User getMe() {
 		return me;
+	}
+
+	public void runWorker() {
+		worker.execute();
 	}
 }

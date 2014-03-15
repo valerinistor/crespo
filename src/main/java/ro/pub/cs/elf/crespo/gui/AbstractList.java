@@ -28,4 +28,7 @@ public abstract class AbstractList<E> extends JList<E> implements ICommand {
 		return this.model.getSize();
 	}
 
+	public void clearModel() {
+		this.model.clear();
+	}
 }

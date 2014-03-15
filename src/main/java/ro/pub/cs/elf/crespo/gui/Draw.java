@@ -29,6 +29,8 @@ public class Draw {
 	}
 
 	public void paint() {
+		userList.addListSelectionListener(new CommandListener());
+		fileList.addListSelectionListener(new CommandListener());
 
 		JPanel left = new JPanel(new BorderLayout());
 
@@ -77,5 +79,4 @@ public class Draw {
 	public JLabel getStatusBar() {
 		return statusBar;
 	}
-
 }
