@@ -5,12 +5,13 @@ import java.util.List;
 public class User {
 
 	private String userName;
-
 	private List<File> sharedFiles;
+	private List<TransferData> transfers;
 
 	public User(String userName) {
 		this.userName = userName;
 	}
+
 	public String getUserName() {
 		return userName;
 	}
@@ -34,8 +35,17 @@ public class User {
 	public void removeSharedFile(File file) {
 		this.sharedFiles.remove(file);
 	}
+
 	@Override
 	public String toString() {
 		return this.userName;
+	}
+
+	public List<TransferData> getTransfers() {
+		return transfers;
+	}
+
+	public void setTransfers(List<TransferData> transfers) {
+		this.transfers = transfers;
 	}
 }

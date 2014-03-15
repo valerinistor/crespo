@@ -5,6 +5,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -16,15 +17,15 @@ public class Draw {
 	private final Container contentPane;
 	private final FileList fileList;
 	private final UserList userList;
-	private final StatusBar statusBar;
 	private final TransferTable transferTable;
+	private final JLabel statusBar;
 
 	public Draw(Container contentPane, Mediator mediator) {
 		this.contentPane = contentPane;
 		this.fileList = new FileList(mediator);
 		this.userList = new UserList(mediator);
 		this.transferTable = new TransferTable(mediator);
-		this.statusBar = new StatusBar();
+		this.statusBar = new JLabel();
 	}
 
 	public void paint() {
@@ -52,6 +53,8 @@ public class Draw {
 		userPane.setBorder(BorderFactory.createTitledBorder("Users"));
 
 		statusBar.setBorder(BorderFactory.createTitledBorder("Status"));
+		statusBar.setPreferredSize(new Dimension(Crespo.width,
+				Crespo.height / 10));
 
 		// Add left panel to CENTER position in order to fill available space.
 		contentPane.add(left, BorderLayout.CENTER);
@@ -66,4 +69,13 @@ public class Draw {
 	public FileList getFileList() {
 		return fileList;
 	}
+
+	public TransferTable getTransferTable() {
+		return transferTable;
+	}
+
+	public JLabel getStatusBar() {
+		return statusBar;
+	}
+
 }

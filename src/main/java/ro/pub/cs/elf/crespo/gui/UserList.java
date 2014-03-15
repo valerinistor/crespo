@@ -7,19 +7,20 @@ public class UserList extends AbstractList<User> {
 
 	private static final long serialVersionUID = -2019586378839251935L;
 
-	private final String[] data = {"Barack", "Obama", "Putin", "Vladimir"};
-	private Mediator mediator;
+	private final Mediator mediator;
 
 	public UserList(Mediator mediator) {
 		super();
 		this.mediator = mediator;
-		for (String s : data) {
-			addElement(new User(s));
-		}
 	}
 
 	@Override
 	public void execute() {
-		// TODO
+		User user = getSelectedValue();
+		if (user != null) {
+			this.mediator.addFiles(user.getSharedFiles());
+			this.mediator.updateStatus(String.format(
+					"Getting file list from %s...", user));
+		}
 	}
 }

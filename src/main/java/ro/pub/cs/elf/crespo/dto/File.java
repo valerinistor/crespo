@@ -2,6 +2,7 @@ package ro.pub.cs.elf.crespo.dto;
 
 public class File {
 
+	private User owner;
 	private String fileName;
 
 	public File(String fileName) {
@@ -14,6 +15,14 @@ public class File {
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
 	}
 
 	@Override

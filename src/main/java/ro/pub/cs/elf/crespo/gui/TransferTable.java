@@ -1,35 +1,45 @@
 package ro.pub.cs.elf.crespo.gui;
 
+import java.util.Vector;
+
 import javax.swing.JTable;
 
-import ro.pub.cs.elf.crespo.dto.File;
+import ro.pub.cs.elf.crespo.app.ICommand;
 import ro.pub.cs.elf.crespo.dto.TransferData;
-import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
-public class TransferTable extends JTable {
+public class TransferTable extends JTable implements ICommand {
 
 	private static final long serialVersionUID = -1702407567172353002L;
+	private final TransferTableModel transferTableModel;
 	private final Mediator mediator;
 
 	public TransferTable(Mediator mediator) {
-		super(new TransferTableModel());
+		super();
+		this.transferTableModel = new TransferTableModel();
 		this.mediator = mediator;
-		addTransferData();
+		setModel(this.transferTableModel);
 	}
 
-	private void addTransferData() {
-		TransferData td = new TransferData();
-		td.setSource("John");
-		td.setDestination("Dow");
-		td.setProgress(74);
-		td.setFile(new File("cmd.exe"));
-		td.setStatus(TransferStatus.RECEIVING);
+	public void addRow(TransferData rowData) {
+		Vector<Object> row = new Vector<>(5);
+		row.add(rowData.getSource());
+		row.add(rowData.getDestination());
+		row.add(rowData.getFile().getFileName());
+		row.add(rowData.getProgress());
+		row.add(rowData.getStatus().toString());
 
-		TransferTableModel tm = (TransferTableModel) getModel();
-		tm.addRow(td);
-		tm.addRow(td);
-		tm.addRow(td);
-		tm.addRow(td);
+		this.transferTableModel.addRow(row);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void execute() {
+		try {
+			Vector<Object> row = (Vector<Object>) transferTableModel
+					.getDataVector().get(getSelectedRow());
+			this.mediator.updateStatus(String.format("%s", row.get(4)));
+		} catch (NullPointerException e) {
+		}
 	}
 }

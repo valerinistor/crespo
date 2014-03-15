@@ -11,43 +11,54 @@ public class TransferData {
 			this.name = name;
 		}
 
+		@Override
 		public String toString() {
 			return name;
 		}
 	}
-	private String source;
-	private String destination;
+
+	private User source;
+	private User destination;
 	private File file;
 	private int progress;
 	private TransferStatus status;
 
-	public String getSource() {
+	public User getSource() {
 		return source;
 	}
-	public void setSource(String source) {
+
+	public void setSource(User source) {
 		this.source = source;
 	}
-	public String getDestination() {
+
+	public User getDestination() {
 		return destination;
 	}
-	public void setDestination(String destination) {
+
+	public void setDestination(User destination) {
 		this.destination = destination;
 	}
+
 	public File getFile() {
 		return file;
 	}
+
 	public void setFile(File file) {
 		this.file = file;
 	}
+
 	public int getProgress() {
 		return progress;
 	}
+
 	public void setProgress(int progress) {
 		this.progress = progress;
 	}
+
 	public TransferStatus getStatus() {
 		return status;
 	}
+
 	public void setStatus(TransferStatus status) {
 		this.status = status;
 	}
