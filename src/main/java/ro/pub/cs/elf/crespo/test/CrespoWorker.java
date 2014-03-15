@@ -1,4 +1,4 @@
-package ro.pub.cs.elf.crespo.gui;
+package ro.pub.cs.elf.crespo.test;
 
 import java.util.ArrayList;
 import java.util.List;

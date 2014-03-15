@@ -5,8 +5,8 @@ import java.util.List;
 import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
-import ro.pub.cs.elf.crespo.gui.CrespoWorker;
 import ro.pub.cs.elf.crespo.gui.Draw;
+import ro.pub.cs.elf.crespo.test.CrespoWorker;
 
 public class Mediator {
 

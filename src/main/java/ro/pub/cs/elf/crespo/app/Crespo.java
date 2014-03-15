@@ -38,6 +38,8 @@ public class Crespo extends JFrame {
 		this.mediator.registerDraw(picasso);
 
 		this.setVisible(true);
+
+		this.mediator.runWorker();
 	}
 
 	private void setCenter() {
