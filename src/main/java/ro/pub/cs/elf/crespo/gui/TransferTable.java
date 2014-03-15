@@ -10,7 +10,7 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 public class TransferTable extends JTable {
 
 	private static final long serialVersionUID = -1702407567172353002L;
-	private Mediator mediator;
+	private final Mediator mediator;
 
 	public TransferTable(Mediator mediator) {
 		super(new TransferTableModel());
@@ -22,7 +22,7 @@ public class TransferTable extends JTable {
 		TransferData td = new TransferData();
 		td.setSource("John");
 		td.setDestination("Dow");
-		td.setProgress(42);
+		td.setProgress(74);
 		td.setFile(new File("cmd.exe"));
 		td.setStatus(TransferStatus.RECEIVING);
 

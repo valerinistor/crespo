@@ -35,7 +35,11 @@ public class Draw {
 		filePane.setBorder(BorderFactory.createTitledBorder("Files"));
 
 		JScrollPane transferPane = new JScrollPane(transferTable);
+
 		transferTable.setFillsViewportHeight(true);
+		transferTable.getColumnModel().getColumn(3)
+				.setCellRenderer(new ProgressCellRender());
+
 		transferPane.setBorder(BorderFactory.createTitledBorder("Transfers"));
 		transferPane.setPreferredSize(new Dimension(0, Crespo.height / 3));
 
