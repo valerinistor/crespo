@@ -12,7 +12,7 @@ public class StatusBar extends JLabel {
 
 	public StatusBar() {
 		super("Status");
-		super.setPreferredSize(new Dimension(Crespo.width, 16));
+		super.setPreferredSize(new Dimension(Crespo.width, Crespo.height / 10));
 	}
 
 }
