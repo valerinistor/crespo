@@ -39,14 +39,13 @@ public class TransferTable extends JTable implements ICommand {
 		for (int row = 0; row < transferTableModel.getRowCount(); row++) {
 			User source = (User) transferTableModel.getValueAt(row, 0);
 			User dest = (User) transferTableModel.getValueAt(row, 1);
-			File file = (File) transferTableModel.getValueAt(row, 3);
+			File file = (File) transferTableModel.getValueAt(row, 2);
 
 			if (source.equals(rowData.getSource())
 					&& dest.equals(rowData.getDestination())
 					&& file.equals(rowData.getFile())) {
 				transferTableModel.setValueAt(rowData.getProgress(), row, 3);
-				transferTableModel.setValueAt(rowData.getStatus().toString(),
-						row, 4);
+				transferTableModel.setValueAt(rowData.getStatus().toString(), row, 4);
 			}
 		}
 
