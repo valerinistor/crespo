@@ -1,14 +1,14 @@
 package ro.pub.cs.elf.crespo.gui;
 
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import ro.pub.cs.elf.crespo.app.ICommand;
 
-public class CommandListener implements ListSelectionListener {
+public class CommandListener extends MouseAdapter {
 
 	@Override
-	public void valueChanged(ListSelectionEvent e) {
+	public void mouseClicked(MouseEvent e) {
 		if (e.getSource() instanceof ICommand) {
 			((ICommand) e.getSource()).execute();
 		}

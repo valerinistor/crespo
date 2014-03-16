@@ -29,8 +29,10 @@ public class Draw {
 	}
 
 	public void paint() {
-		userList.addListSelectionListener(new CommandListener());
-		fileList.addListSelectionListener(new CommandListener());
+		/* add listeners */
+		this.userList.addMouseListener(new CommandListener());
+		this.fileList.addMouseListener(new CommandListener());
+		this.transferTable.addMouseListener(new CommandListener());
 
 		JPanel left = new JPanel(new BorderLayout());
 
@@ -63,7 +65,6 @@ public class Draw {
 		contentPane.add(userPane, BorderLayout.EAST);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 	}
-
 	public UserList getUserList() {
 		return userList;
 	}
