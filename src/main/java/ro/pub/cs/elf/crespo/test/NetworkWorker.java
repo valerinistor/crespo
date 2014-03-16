@@ -5,11 +5,10 @@ import java.util.concurrent.TransferQueue;
 
 import javax.swing.SwingWorker;
 
-import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
-public class NetworkWorker extends SwingWorker<File, TransferData> {
+public class NetworkWorker extends SwingWorker<Void, Void> {
 
 	public final TransferQueue<TransferData> transferQueue = new LinkedTransferQueue<>();
 	private final Mediator mediator;
@@ -19,9 +18,9 @@ public class NetworkWorker extends SwingWorker<File, TransferData> {
 	}
 
 	@Override
-	protected File doInBackground() throws Exception {
+	protected Void doInBackground() throws Exception {
 
-		while (true) {
+		while (!isCancelled()) {
 			TransferData task = transferQueue.take();
 			for (int i = 0; i <= 100; i += 10) {
 				task.setProgress(i);
@@ -29,9 +28,10 @@ public class NetworkWorker extends SwingWorker<File, TransferData> {
 				Thread.sleep(1000);
 			}
 		}
+		return null;
 	}
 
 	public void addNetworkTask(TransferData task) {
-		transferQueue.tryTransfer(task);
+		transferQueue.offer(task);
 	}
 }
