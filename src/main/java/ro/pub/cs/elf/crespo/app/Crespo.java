@@ -20,7 +20,7 @@ public class Crespo extends JFrame {
 	public static int width = 640;
 	public static int height = 480;
 
-	private Mediator mediator;
+	private final Mediator mediator;
 	private final Draw picasso;
 
 	public Crespo() {
@@ -39,7 +39,7 @@ public class Crespo extends JFrame {
 
 		this.setVisible(true);
 
-		this.mediator.runWorker();
+		this.mediator.runWorkers();
 	}
 
 	private void setCenter() {

@@ -65,6 +65,7 @@ public class Draw {
 		contentPane.add(userPane, BorderLayout.EAST);
 		contentPane.add(statusBar, BorderLayout.SOUTH);
 	}
+
 	public UserList getUserList() {
 		return userList;
 	}

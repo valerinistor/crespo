@@ -53,6 +53,9 @@ public class TransferData {
 
 	public void setProgress(int progress) {
 		this.progress = progress;
+		if (progress == 100) {
+			setStatus(TransferStatus.COMPLETED);
+		}
 	}
 
 	public TransferStatus getStatus() {

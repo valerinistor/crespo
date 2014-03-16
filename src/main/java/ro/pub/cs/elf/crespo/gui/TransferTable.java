@@ -5,7 +5,9 @@ import java.util.Vector;
 import javax.swing.JTable;
 
 import ro.pub.cs.elf.crespo.app.ICommand;
+import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.TransferData;
+import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class TransferTable extends JTable implements ICommand {
@@ -25,11 +27,29 @@ public class TransferTable extends JTable implements ICommand {
 		Vector<Object> row = new Vector<>(5);
 		row.add(rowData.getSource());
 		row.add(rowData.getDestination());
-		row.add(rowData.getFile().getFileName());
+		row.add(rowData.getFile());
 		row.add(rowData.getProgress());
 		row.add(rowData.getStatus().toString());
 
 		this.transferTableModel.addRow(row);
+	}
+
+	public void updateRow(TransferData rowData) {
+
+		for (int row = 0; row < transferTableModel.getRowCount(); row++) {
+			User source = (User) transferTableModel.getValueAt(row, 0);
+			User dest = (User) transferTableModel.getValueAt(row, 1);
+			File file = (File) transferTableModel.getValueAt(row, 3);
+
+			if (source.equals(rowData.getSource())
+					&& dest.equals(rowData.getDestination())
+					&& file.equals(rowData.getFile())) {
+				transferTableModel.setValueAt(rowData.getProgress(), row, 3);
+				transferTableModel.setValueAt(rowData.getStatus().toString(),
+						row, 4);
+			}
+		}
+
 	}
 
 	@SuppressWarnings("unchecked")

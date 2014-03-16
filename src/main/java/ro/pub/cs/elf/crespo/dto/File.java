@@ -29,4 +29,21 @@ public class File {
 	public String toString() {
 		return this.fileName;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		File other = (File) obj;
+		if (fileName == null) {
+			if (other.fileName != null)
+				return false;
+		} else if (!fileName.equals(other.fileName))
+			return false;
+		return true;
+	}
 }

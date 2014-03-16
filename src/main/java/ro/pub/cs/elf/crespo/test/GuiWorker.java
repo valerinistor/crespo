@@ -10,13 +10,13 @@ import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
-public class CrespoWorker extends SwingWorker<User, User> {
+public class GuiWorker extends SwingWorker<User, User> {
 
 	private int DELAY = 3000;
 	private int count = 5;
 	private Mediator mediator;
 
-	public CrespoWorker(Mediator mediator) {
+	public GuiWorker(Mediator mediator) {
 		this.mediator = mediator;
 	}
 

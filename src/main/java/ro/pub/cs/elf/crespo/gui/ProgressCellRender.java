@@ -33,4 +33,5 @@ public class ProgressCellRender extends JProgressBar implements
 		setString(String.format("%d%%", progress));
 		return this;
 	}
+
 }
