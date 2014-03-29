@@ -1,8 +1,12 @@
 package ro.pub.cs.elf.crespo.dto;
 
+/**
+ * File POJO Object
+ *
+ */
 public class File {
 
-	private User owner;
+	private User owner; // Uer that own the file
 	private String fileName;
 
 	public File(String fileName) {

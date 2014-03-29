@@ -12,8 +12,13 @@ import javax.swing.JScrollPane;
 import ro.pub.cs.elf.crespo.app.Crespo;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
+/**
+ * GUI client
+ *
+ */
 public class Draw {
 
+	/* GUI objects */
 	private final Container contentPane;
 	private final FileList fileList;
 	private final UserList userList;
@@ -28,6 +33,9 @@ public class Draw {
 		this.statusBar = new JLabel();
 	}
 
+	/**
+	 * Initiate all GUI objects, and set their position
+	 */
 	public void paint() {
 		/* add listeners */
 		this.userList.addMouseListener(new CommandListener());
@@ -42,6 +50,7 @@ public class Draw {
 		JScrollPane transferPane = new JScrollPane(transferTable);
 
 		transferTable.setFillsViewportHeight(true);
+		// set progress bar cell renderer
 		transferTable.getColumnModel().getColumn(3)
 				.setCellRenderer(new ProgressCellRender());
 
@@ -78,7 +87,7 @@ public class Draw {
 		return transferTable;
 	}
 
-	public JLabel getStatusBar() {
-		return statusBar;
+	public void updateStatus(String status) {
+		statusBar.setText(status);
 	}
 }

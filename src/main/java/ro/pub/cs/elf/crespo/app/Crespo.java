@@ -7,23 +7,32 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 
+import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.gui.Draw;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
+/**
+ * Main window class
+ * 
+ */
 public class Crespo extends JFrame {
 
 	private static final long serialVersionUID = -4702017201445413247L;
 
-	public static int width = 640;
-	public static int height = 480;
+	public static int width = 640; // window width
+	public static int height = 480; // window height
 
 	private final Mediator mediator;
 	private final Draw picasso;
 
-	public Crespo() {
+	public Crespo(User user) {
 		super("Crespo");
 
 		registerExitEvents();
@@ -32,16 +41,24 @@ public class Crespo extends JFrame {
 		this.setCenter();
 
 		this.mediator = new Mediator();
+
 		this.picasso = new Draw(getContentPane(), this.mediator);
 		this.picasso.paint();
 
+		// register gui client to mediator
 		this.mediator.registerDraw(picasso);
+		// register self user
+		this.mediator.registerMe(user);
 
 		this.setVisible(true);
 
+		// run swing workers
 		this.mediator.runWorkers();
 	}
 
+	/**
+	 * Set main window to screen center
+	 */
 	private void setCenter() {
 		Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int x = (int) (dimension.getWidth() - this.getWidth()) / 2;
@@ -49,6 +66,9 @@ public class Crespo extends JFrame {
 		setLocation(x, y);
 	}
 
+	/**
+	 * register exit bindings
+	 */
 	private void registerExitEvents() {
 		addWindowListener(new WindowAdapter() {
 			@Override
@@ -67,7 +87,39 @@ public class Crespo extends JFrame {
 		});
 	}
 
+	/**
+	 * load logged user from property file
+	 * 
+	 * @return
+	 */
+	public static User loadUser() {
+		Properties userProp = new Properties();
+		try {
+			userProp.load(Thread.currentThread().getContextClassLoader()
+					.getResourceAsStream("user.properties"));
+		} catch (IOException e) {
+			System.err.println("Unable to load user property file");
+		}
+
+		User user = new User(userProp.getProperty("user.name"));
+		try {
+			Inet4Address ipAddress = (Inet4Address) Inet4Address
+					.getByName(userProp.getProperty("user.ip"));
+			user.setIpAddress(ipAddress);
+		} catch (UnknownHostException e) {
+			System.err.println(e.getMessage());
+		}
+		user.setPort(Integer.parseInt(userProp.getProperty("user.port")));
+
+		return user;
+	}
+
+	/**
+	 * main run method
+	 * 
+	 * @param args program arguments
+	 */
 	public static void main(String[] args) {
-		new Crespo();
+		new Crespo(loadUser());
 	}
 }

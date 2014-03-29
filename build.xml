@@ -3,16 +3,18 @@
 
 	<!-- Sets variables which can later be used -->
 	<property name="main.src.dir" value="src/main/java" />
+	<property name="main.res.dir" value="src/main/resources" />
 	<property name="build.dir" value="build" />
 	<property name="lib.dir" value="lib" />
 
-	<!-- Define the classpath which includes the 
-		jars and the classes after compiling -->
+	<!-- Define the classpath which includes the jars and the classes after 
+		compiling -->
 	<path id="lib.class.path">
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
 		</fileset>
 		<pathelement location="${build.dir}" />
+		<pathelement location="${main.res.dir}" />
 	</path>
 
 	<!-- Targets -->
@@ -27,13 +29,13 @@
 	<!-- Compile target -->
 	<target name="compile" depends="clean, init">
 		<echo message="Compiling main sources" />
-		<javac srcdir="${main.src.dir}" destdir="${build.dir}" includeantruntime="false" />
+		<javac srcdir="${main.src.dir}" destdir="${build.dir}"
+			includeantruntime="false" />
 	</target>
 
 	<target name="run" depends="compile">
 		<java classname="ro.pub.cs.elf.crespo.app.Crespo" fork="true">
-			<classpath refid="lib.class.path"/>
-			<arg value=""/>
+			<classpath refid="lib.class.path" />
 		</java>
 	</target>
 

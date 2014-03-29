@@ -10,25 +10,29 @@ import ro.pub.cs.elf.crespo.dto.File;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
-public class GuiWorker extends SwingWorker<User, User> {
+public class WebServiceWorker extends SwingWorker<Void, User> {
 
-	private int DELAY = 3000;
-	private int count = 5;
 	private Mediator mediator;
+	private int DELAY = 2000;
+	private int count = 5;
 
-	public GuiWorker(Mediator mediator) {
+	public WebServiceWorker(Mediator mediator) {
 		this.mediator = mediator;
 	}
 
+	/**
+	 * generate users with files
+	 */
 	@Override
-	protected User doInBackground() throws Exception {
+	protected Void doInBackground() throws Exception {
 		Thread.sleep(DELAY);
 
+		Random rand = new Random();
 		for (int i = 0; i < count; i++) {
 			User user = new User("user_" + i);
 			List<File> userFiles = new ArrayList<File>();
 
-			for (int j = 0; j < new Random().nextInt(15); j++) {
+			for (int j = 0; j < rand.nextInt(15); j++) {
 				File file = new File(user + "_file_" + j);
 				file.setOwner(user);
 				userFiles.add(file);
@@ -38,10 +42,12 @@ public class GuiWorker extends SwingWorker<User, User> {
 			publish(user);
 			Thread.sleep(DELAY);
 		}
-
 		return null;
 	}
 
+	/**
+	 * update GUI with new users and files
+	 */
 	@Override
 	protected void process(List<User> chunks) {
 		User user = chunks.get(0);

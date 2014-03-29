@@ -7,6 +7,10 @@ import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+/**
+ * Custom progress bar renderer
+ * in TranferTable {@link TransferTable} cell
+ */
 public class ProgressCellRender extends JProgressBar implements
 		TableCellRenderer {
 

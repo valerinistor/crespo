@@ -1,12 +1,19 @@
 package ro.pub.cs.elf.crespo.dto;
 
+import java.net.Inet4Address;
 import java.util.List;
 
+/**
+ * User POJO Object
+ * 
+ */
 public class User {
 
-	private String userName;
-	private List<File> sharedFiles;
-	private List<TransferData> transfers;
+	private String userName; // user name
+	private List<File> sharedFiles; // user shared files
+	private List<TransferData> transfers; // user transfers
+	private int port; // user port
+	private Inet4Address ipAddress; // user ip address
 
 	public User(String userName) {
 		this.userName = userName;
@@ -36,17 +43,33 @@ public class User {
 		this.sharedFiles.remove(file);
 	}
 
-	@Override
-	public String toString() {
-		return this.userName;
-	}
-
 	public List<TransferData> getTransfers() {
 		return transfers;
 	}
 
 	public void setTransfers(List<TransferData> transfers) {
 		this.transfers = transfers;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public Inet4Address getIpAddress() {
+		return ipAddress;
+	}
+
+	public void setIpAddress(Inet4Address ipAddress) {
+		this.ipAddress = ipAddress;
+	}
+
+	@Override
+	public String toString() {
+		return this.userName;
 	}
 
 	@Override

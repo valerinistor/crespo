@@ -1,9 +1,16 @@
 package ro.pub.cs.elf.crespo.dto;
 
+/**
+ * Transfer row data
+ *
+ */
 public class TransferData {
 
+	/* Transfer States */
 	public enum TransferStatus {
-		SENDING("Sending..."), RECEIVING("Receiving..."), COMPLETED("Completed");
+		SENDING("Sending..."),
+		RECEIVING("Receiving..."),
+		COMPLETED("Completed");
 
 		private final String name;
 

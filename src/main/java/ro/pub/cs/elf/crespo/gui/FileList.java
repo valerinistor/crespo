@@ -11,11 +11,8 @@ public class FileList extends AbstractList<File> {
 
 	private static final long serialVersionUID = 896209637426611146L;
 
-	private final Mediator mediator;
-
 	public FileList(Mediator mediator) {
-		super();
-		this.mediator = mediator;
+		super(mediator);
 	}
 
 	public void addFiles(List<File> files) {
@@ -24,9 +21,18 @@ public class FileList extends AbstractList<File> {
 		}
 	}
 
+	/**
+	 * When file is double clicked in file list
+	 * new transfer is added to transfer table
+	 */
 	@Override
 	public void execute() {
 		File file = getSelectedValue();
+
+		if (file == null) {
+			return;
+		}
+
 		TransferData rowData = new TransferData();
 		rowData.setSource(file.getOwner());
 		rowData.setDestination(this.mediator.getMe());
