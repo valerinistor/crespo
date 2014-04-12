@@ -10,9 +10,7 @@
 	<!-- Define the classpath which includes the jars and the classes after 
 		compiling -->
 	<path id="lib.class.path">
-		<!-- <fileset dir="${lib.dir}">
-			<include name="**/*.jar" />
-		</fileset> -->
+		<!-- <fileset dir="${lib.dir}"> <include name="**/*.jar" /> </fileset> -->
 		<pathelement location="${build.dir}" />
 		<pathelement location="${main.res.dir}" />
 	</path>
@@ -33,13 +31,35 @@
 			includeantruntime="false" />
 	</target>
 
-	<target name="run" depends="compile">
+	<target name="run">
+		<echo message="running ${arg} instance" />
 		<java classname="ro.pub.cs.elf.crespo.app.Crespo" fork="true">
 			<classpath refid="lib.class.path" />
-			<arg value="bugs"/>
+			<arg value="${arg}" />
 		</java>
 	</target>
 
 	<!-- Main target -->
-	<target name="main" depends="run" />
+	<target name="main" depends="compile">
+		<parallel threadCount="3">
+			<sequential>
+				<sleep seconds="2" />
+				<antcall target="run">
+					<param name="arg" value="bugs" />
+				</antcall>
+			</sequential>
+			<sequential>
+				<sleep seconds="2" />
+				<antcall target="run">
+					<param name="arg" value="daffy" />
+				</antcall>
+			</sequential>
+			<sequential>
+				<sleep seconds="2" />
+				<antcall target="run">
+					<param name="arg" value="sam" />
+				</antcall>
+			</sequential>
+		</parallel>
+	</target>
 </project>
