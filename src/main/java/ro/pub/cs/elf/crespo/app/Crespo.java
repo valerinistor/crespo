@@ -7,6 +7,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
@@ -15,6 +16,7 @@ import java.util.Properties;
 import javax.swing.JFrame;
 
 import ro.pub.cs.elf.crespo.dto.User;
+import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.gui.Draw;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
@@ -92,11 +94,11 @@ public class Crespo extends JFrame {
 	 * 
 	 * @return
 	 */
-	public static User loadUser() {
+	public static User loadUser(String me) {
 		Properties userProp = new Properties();
 		try {
 			userProp.load(Thread.currentThread().getContextClassLoader()
-					.getResourceAsStream("user.properties"));
+					.getResourceAsStream(me + ".properties"));
 		} catch (IOException e) {
 			System.err.println("Unable to load user property file");
 		}
@@ -111,6 +113,10 @@ public class Crespo extends JFrame {
 		}
 		user.setPort(Integer.parseInt(userProp.getProperty("user.port")));
 
+		File userHome = new File(userProp.getProperty("user.home"));
+		for (File file : userHome.listFiles()) {
+			user.addSharedFile(new UserFile(user, file.getPath()));
+		}
 		return user;
 	}
 
@@ -120,6 +126,6 @@ public class Crespo extends JFrame {
 	 * @param args program arguments
 	 */
 	public static void main(String[] args) {
-		new Crespo(loadUser());
+		new Crespo(loadUser(args[0]));
 	}
 }

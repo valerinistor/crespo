@@ -36,6 +36,7 @@
 	<target name="run" depends="compile">
 		<java classname="ro.pub.cs.elf.crespo.app.Crespo" fork="true">
 			<classpath refid="lib.class.path" />
+			<arg value="bugs"/>
 		</java>
 	</target>
 
