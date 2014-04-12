@@ -8,10 +8,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import ro.pub.cs.elf.crespo.dto.UserFile;
 
 public class Sender extends Thread {
 
+	private Logger logger = Logger.getLogger(Sender.class);
 	private final SelectionKey key;
 
 	public Sender(SelectionKey key) {
@@ -20,7 +23,7 @@ public class Sender extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("SEND: ");
+		logger.info("SENDER");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
@@ -35,8 +38,8 @@ public class Sender extends Thread {
 			}
 
 			if (fileToSend != null) {
-				ByteBuffer buf = ByteBuffer.allocateDirect((int) fileToSend
-						.length() + 10);
+				logger.info("sending file " + fileToSend.getPath());
+				ByteBuffer buf = ByteBuffer.allocateDirect((int) fileToSend.length() + 10);
 				buf.clear();
 				buf.put(Files.readAllBytes(Paths.get(fileToSend
 						.getAbsolutePath())));
@@ -44,14 +47,14 @@ public class Sender extends Thread {
 				buf.flip();
 				socketChannel.write(buf);
 			} else {
-				System.err.println("File not found");
+				logger.error("File not found");
 				return;
 			}
 
 			key.interestOps(0);
 			key.selector().wakeup();
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 }

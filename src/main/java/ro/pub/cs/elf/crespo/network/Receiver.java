@@ -5,8 +5,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
+import org.apache.log4j.Logger;
+
 public class Receiver extends Thread {
 
+	private Logger logger = Logger.getLogger(Receiver.class);
 	private final SelectionKey key;
 
 	public Receiver(SelectionKey key) {
@@ -15,7 +18,7 @@ public class Receiver extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("RECEIVE: ");
+		logger.info("RECEIVER");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		ByteBuffer buf = ByteBuffer.allocateDirect(128);
@@ -31,21 +34,21 @@ public class Receiver extends Thread {
 
 			String requestedFile = new String(bytes);
 
-			System.out.println(requestedFile);
+			logger.info("Request: " + requestedFile);
 
 			if (requestedFile.startsWith(Network.REQUEST_HEADER)) {
 				requestedFile = requestedFile.substring(Network.REQUEST_HEADER
 						.length());
 				key.attach(requestedFile);
 			} else {
-				System.err.println("Invalid request");
+				logger.error("Invalid request");
 				return;
 			}
 
 			key.interestOps(SelectionKey.OP_WRITE);
 			key.selector().wakeup();
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 

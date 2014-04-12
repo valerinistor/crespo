@@ -10,7 +10,9 @@
 	<!-- Define the classpath which includes the jars and the classes after 
 		compiling -->
 	<path id="lib.class.path">
-		<!-- <fileset dir="${lib.dir}"> <include name="**/*.jar" /> </fileset> -->
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
 		<pathelement location="${build.dir}" />
 		<pathelement location="${main.res.dir}" />
 	</path>

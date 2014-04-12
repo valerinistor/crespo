@@ -16,11 +16,14 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
+
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class Network {
 
+	private Logger logger = Logger.getLogger(Network.class);
 	public static Mediator mediator;
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
@@ -43,14 +46,14 @@ public class Network {
 			outStream.write((REQUEST_HEADER + td.getFile().getName())
 					.getBytes());
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 
 		receiveResponse(socket, td.getFile().getName());
 		try {
 			outStream.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -67,11 +70,12 @@ public class Network {
 			bw = new BufferedWriter(fw);
 
 			int b;
-			while ((b = inStream.read()) != EOT)
+			while ((b = inStream.read()) != EOT) {
 				bw.write((byte) b);
+			}
 
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.error(e.getMessage());
 		} finally {
 			try {
 				if (inStream != null && bw != null) {
@@ -79,7 +83,7 @@ public class Network {
 					bw.close();
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage());
 			}
 
 		}
@@ -119,26 +123,28 @@ public class Network {
 			}
 
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			logger.fatal(e.getMessage());
 		} finally {
-			// cleanup
+			logger.info("closing resources");
 			if (selector != null)
 				try {
 					selector.close();
 				} catch (IOException e) {
+					logger.error(e.getMessage());
 				}
 
 			if (serverSocketChannel != null)
 				try {
 					serverSocketChannel.close();
 				} catch (IOException e) {
+					logger.error(e.getMessage());
 				}
 		}
 
 	}
 
 	private void accept(SelectionKey key) throws IOException {
-		System.out.print("ACCEPT: ");
+		logger.info("ACCEPT CONNECTION");
 
 		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
 				.channel();
@@ -147,7 +153,6 @@ public class Network {
 		socketChannel.configureBlocking(false);
 		socketChannel.register(key.selector(), SelectionKey.OP_READ);
 
-		System.out.println("Connection from: "
-				+ socketChannel.socket().getRemoteSocketAddress());
+		logger.info("FROM: " + socketChannel.socket().getRemoteSocketAddress());
 	}
 }

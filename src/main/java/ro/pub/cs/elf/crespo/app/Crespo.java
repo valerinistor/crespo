@@ -117,6 +117,7 @@ public class Crespo extends JFrame {
 		for (File file : userHome.listFiles()) {
 			user.addSharedFile(new UserFile(user, file.getPath()));
 		}
+		System.setProperty("logfile.name", userProp.getProperty("user.logfile"));
 		return user;
 	}
 
