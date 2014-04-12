@@ -2,12 +2,12 @@ package ro.pub.cs.elf.crespo.gui;
 
 import java.util.List;
 
-import ro.pub.cs.elf.crespo.dto.File;
+import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
-public class FileList extends AbstractList<File> {
+public class FileList extends AbstractList<UserFile> {
 
 	private static final long serialVersionUID = 896209637426611146L;
 
@@ -15,8 +15,8 @@ public class FileList extends AbstractList<File> {
 		super(mediator);
 	}
 
-	public void addFiles(List<File> files) {
-		for (File f : files) {
+	public void addFiles(List<UserFile> files) {
+		for (UserFile f : files) {
 			addElement(f);
 		}
 	}
@@ -27,7 +27,7 @@ public class FileList extends AbstractList<File> {
 	 */
 	@Override
 	public void execute() {
-		File file = getSelectedValue();
+		UserFile file = getSelectedValue();
 
 		if (file == null) {
 			return;

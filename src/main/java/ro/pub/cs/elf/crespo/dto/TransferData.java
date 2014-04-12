@@ -26,7 +26,7 @@ public class TransferData {
 
 	private User source;
 	private User destination;
-	private File file;
+	private UserFile file;
 	private int progress;
 	private TransferStatus status;
 
@@ -46,11 +46,11 @@ public class TransferData {
 		this.destination = destination;
 	}
 
-	public File getFile() {
+	public UserFile getFile() {
 		return file;
 	}
 
-	public void setFile(File file) {
+	public void setFile(UserFile file) {
 		this.file = file;
 	}
 

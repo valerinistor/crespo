@@ -5,7 +5,7 @@ import java.util.Vector;
 import javax.swing.JTable;
 
 import ro.pub.cs.elf.crespo.app.ICommand;
-import ro.pub.cs.elf.crespo.dto.File;
+import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.dto.User;
@@ -52,7 +52,7 @@ public class TransferTable extends JTable implements ICommand {
 		for (int row = 0; row < transferTableModel.getRowCount(); row++) {
 			User source = (User) transferTableModel.getValueAt(row, 0);
 			User dest = (User) transferTableModel.getValueAt(row, 1);
-			File file = (File) transferTableModel.getValueAt(row, 2);
+			UserFile file = (UserFile) transferTableModel.getValueAt(row, 2);
 
 			if (source.equals(rowData.getSource())
 					&& dest.equals(rowData.getDestination())

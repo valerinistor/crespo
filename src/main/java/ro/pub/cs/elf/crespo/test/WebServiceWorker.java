@@ -6,7 +6,7 @@ import java.util.Random;
 
 import javax.swing.SwingWorker;
 
-import ro.pub.cs.elf.crespo.dto.File;
+import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
@@ -30,10 +30,10 @@ public class WebServiceWorker extends SwingWorker<Void, User> {
 		Random rand = new Random();
 		for (int i = 0; i < count; i++) {
 			User user = new User("user_" + i);
-			List<File> userFiles = new ArrayList<File>();
+			List<UserFile> userFiles = new ArrayList<UserFile>();
 
 			for (int j = 0; j < rand.nextInt(15); j++) {
-				File file = new File(user + "_file_" + j);
+				UserFile file = new UserFile(user + "_file_" + j);
 				file.setOwner(user);
 				userFiles.add(file);
 			}

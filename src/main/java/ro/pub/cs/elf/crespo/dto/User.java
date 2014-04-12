@@ -1,6 +1,7 @@
 package ro.pub.cs.elf.crespo.dto;
 
 import java.net.Inet4Address;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,13 +11,14 @@ import java.util.List;
 public class User {
 
 	private String userName; // user name
-	private List<File> sharedFiles; // user shared files
+	private List<UserFile> sharedFiles; // user shared files
 	private List<TransferData> transfers; // user transfers
 	private int port; // user port
 	private Inet4Address ipAddress; // user ip address
 
 	public User(String userName) {
 		this.userName = userName;
+		this.sharedFiles = new ArrayList<>();
 	}
 
 	public String getUserName() {
@@ -27,19 +29,19 @@ public class User {
 		this.userName = userName;
 	}
 
-	public List<File> getSharedFiles() {
+	public List<UserFile> getSharedFiles() {
 		return sharedFiles;
 	}
 
-	public void setSharedFiles(List<File> sharedFiles) {
+	public void setSharedFiles(List<UserFile> sharedFiles) {
 		this.sharedFiles = sharedFiles;
 	}
 
-	public void addSharedFile(File file) {
+	public void addSharedFile(UserFile file) {
 		this.sharedFiles.add(file);
 	}
 
-	public void removeSharedFile(File file) {
+	public void removeSharedFile(UserFile file) {
 		this.sharedFiles.remove(file);
 	}
 

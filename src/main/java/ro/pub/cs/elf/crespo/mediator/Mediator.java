@@ -2,7 +2,7 @@ package ro.pub.cs.elf.crespo.mediator;
 
 import java.util.List;
 
-import ro.pub.cs.elf.crespo.dto.File;
+import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.gui.Draw;
@@ -53,7 +53,7 @@ public class Mediator {
 	 * add files list to GUI
 	 * @param files
 	 */
-	public void addFiles(List<File> files) {
+	public void addFiles(List<UserFile> files) {
 		this.draw.getFileList().clearList();
 		this.draw.getFileList().addFiles(files);
 	}
