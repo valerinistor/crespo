@@ -24,7 +24,13 @@ public class Receiver extends Thread {
 			socketChannel.read(buf);
 
 			buf.flip();
-			String requestedFile = new String(buf.array());
+			byte[] bytes = new byte[buf.remaining()];
+
+		    buf.get(bytes);
+		    buf.position(buf.position() - bytes.length);
+
+		    String requestedFile = new String(bytes);
+
 			System.out.println(requestedFile);
 
 			if (requestedFile.startsWith(Network.REQUEST_HEADER)) {

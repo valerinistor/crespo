@@ -32,6 +32,7 @@ public class Sender extends Thread {
 				if (file.getName().equals(requestedFile)) {
 					buf.clear();
 					buf.put(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
+					buf.put(Network.EOT);
 					buf.flip();
 				}
 			}

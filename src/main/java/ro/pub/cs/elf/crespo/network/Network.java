@@ -25,6 +25,7 @@ public class Network {
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	public static String REQUEST_HEADER = "[GET]";
+	public static byte EOT = 0x04;
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
 
 	public Network(Mediator mediator) {
@@ -41,14 +42,13 @@ public class Network {
 			outStream = new DataOutputStream(socket.getOutputStream());
 			outStream.write((REQUEST_HEADER + td.getFile().getName())
 					.getBytes());
-			outStream.close();
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}
 
 		receiveResponse(socket, td.getFile().getName());
 		try {
-			socket.close();
+			outStream.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -67,7 +67,7 @@ public class Network {
 			bw = new BufferedWriter(fw);
 
 			int b;
-			while ((b = inStream.read()) != -1)
+			while ((b = inStream.read()) != EOT)
 				bw.write((byte) b);
 
 		} catch (IOException e) {
