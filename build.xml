@@ -30,7 +30,9 @@
 	<target name="compile" depends="clean, init">
 		<echo message="Compiling main sources" />
 		<javac srcdir="${main.src.dir}" destdir="${build.dir}"
-			includeantruntime="false" />
+			includeantruntime="false">
+			<classpath refid="lib.class.path" />
+		</javac>
 	</target>
 
 	<target name="run">
