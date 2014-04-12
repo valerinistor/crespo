@@ -68,6 +68,7 @@ public class Mediator {
 	 */
 	public void addTransfer(TransferData rowData) {
 		this.draw.getTransferTable().addRow(rowData);
+		this.nwk.sendRequest(rowData);
 		this.nwkWorker.addNetworkTask(rowData);
 	}
 
