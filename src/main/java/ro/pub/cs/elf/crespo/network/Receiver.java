@@ -2,10 +2,8 @@ package ro.pub.cs.elf.crespo.network;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Channels;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
 
 public class Receiver extends Thread {
 
@@ -26,11 +24,20 @@ public class Receiver extends Thread {
 			socketChannel.read(buf);
 
 			buf.flip();
+			String requestedFile = new String(buf.array());
+			System.out.println(requestedFile);
+
+			if (requestedFile.startsWith(Network.REQUEST_HEADER)) {
+				requestedFile = requestedFile.substring(Network.REQUEST_HEADER.length());
+				key.attach(requestedFile);
+			}
+			else {
+				System.err.println("Invalid request");
+				return;
+			}
+
 			key.interestOps(SelectionKey.OP_WRITE);
 			key.selector().wakeup();
-
-			WritableByteChannel outChannel = Channels.newChannel(System.out);
-			outChannel.write(buf);
 		} catch (IOException e) {
 			System.err.println(e.getMessage());
 		}

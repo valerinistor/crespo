@@ -1,6 +1,10 @@
 package ro.pub.cs.elf.crespo.network;
 
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -17,14 +21,14 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class Network {
 
-	private Mediator mediator;
+	public static Mediator mediator;
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	public static String REQUEST_HEADER = "[GET]";
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
 
 	public Network(Mediator mediator) {
-		this.mediator = mediator;
+		Network.mediator = mediator;
 	}
 
 	public void sendRequest(TransferData td) {
@@ -32,21 +36,55 @@ public class Network {
 		DataOutputStream outStream = null;
 
 		try {
-			socket = new Socket(td.getSource().getIpAddress(), td.getSource().getPort());
+			socket = new Socket(td.getSource().getIpAddress(), td.getSource()
+					.getPort());
 			outStream = new DataOutputStream(socket.getOutputStream());
-			outStream.write((REQUEST_HEADER + td.getFile().getName()).getBytes());
+			outStream.write((REQUEST_HEADER + td.getFile().getName())
+					.getBytes());
+			outStream.close();
 		} catch (IOException e) {
-		} finally {
-			if (outStream != null && socket != null) {
-				try {
-					outStream.close();
-					socket.close();
-				} catch (IOException e) {
-					System.err.println(e.getMessage());
-				}
-			}
+			System.err.println(e.getMessage());
+		}
+
+		receiveResponse(socket, td.getFile().getName());
+		try {
+			socket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
+
+	public void receiveResponse(Socket socket, String fileName) {
+		DataInputStream inStream = null;
+		BufferedWriter bw = null;
+
+		try {
+			inStream = new DataInputStream(socket.getInputStream());
+			File file = new File(fileName);
+			if (!file.exists())
+				file.createNewFile();
+			FileWriter fw = new FileWriter(file.getAbsoluteFile());
+			bw = new BufferedWriter(fw);
+
+			int b;
+			while ((b = inStream.read()) != -1)
+				bw.write((byte) b);
+
+		} catch (IOException e) {
+			System.err.println(e.getMessage());
+		} finally {
+			try {
+				if (inStream != null && bw != null) {
+					inStream.close();
+					bw.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+		}
+	}
+
 	public void start() {
 		try {
 			selector = Selector.open();
