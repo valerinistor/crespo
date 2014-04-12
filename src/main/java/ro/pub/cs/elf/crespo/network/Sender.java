@@ -20,26 +20,35 @@ public class Sender extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("WRITE: ");
+		System.out.println("SEND: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
-		ByteBuffer buf = ByteBuffer.allocateDirect(128);
 
 		try {
 			String requestedFile = (String) key.attachment();
 			List<UserFile> files = Network.mediator.getMe().getSharedFiles();
+			UserFile fileToSend = null;
 			for (UserFile file : files) {
 				if (file.getName().equals(requestedFile)) {
-					buf.clear();
-					buf.put(Files.readAllBytes(Paths.get(file.getAbsolutePath())));
-					buf.put(Network.EOT);
-					buf.flip();
+					fileToSend = file;
 				}
 			}
 
-			socketChannel.write(buf);
+			if (fileToSend != null) {
+				ByteBuffer buf = ByteBuffer.allocateDirect((int) fileToSend
+						.length() + 10);
+				buf.clear();
+				buf.put(Files.readAllBytes(Paths.get(fileToSend
+						.getAbsolutePath())));
+				buf.put(Network.EOT);
+				buf.flip();
+				socketChannel.write(buf);
+			} else {
+				System.err.println("File not found");
+				return;
+			}
 
-			key.interestOps(SelectionKey.OP_READ);
+			key.interestOps(0);
 			key.selector().wakeup();
 		} catch (IOException e) {
 			System.err.println(e.getMessage());

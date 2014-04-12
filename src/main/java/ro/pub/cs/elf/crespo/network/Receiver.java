@@ -15,7 +15,7 @@ public class Receiver extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("READ: ");
+		System.out.println("RECEIVE: ");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 		ByteBuffer buf = ByteBuffer.allocateDirect(128);
@@ -26,18 +26,18 @@ public class Receiver extends Thread {
 			buf.flip();
 			byte[] bytes = new byte[buf.remaining()];
 
-		    buf.get(bytes);
-		    buf.position(buf.position() - bytes.length);
+			buf.get(bytes);
+			buf.position(buf.position() - bytes.length);
 
-		    String requestedFile = new String(bytes);
+			String requestedFile = new String(bytes);
 
 			System.out.println(requestedFile);
 
 			if (requestedFile.startsWith(Network.REQUEST_HEADER)) {
-				requestedFile = requestedFile.substring(Network.REQUEST_HEADER.length());
+				requestedFile = requestedFile.substring(Network.REQUEST_HEADER
+						.length());
 				key.attach(requestedFile);
-			}
-			else {
+			} else {
 				System.err.println("Invalid request");
 				return;
 			}
