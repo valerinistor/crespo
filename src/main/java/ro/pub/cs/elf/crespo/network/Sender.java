@@ -1,5 +1,6 @@
 package ro.pub.cs.elf.crespo.network;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -39,13 +40,45 @@ public class Sender extends Thread {
 
 			if (fileToSend != null) {
 				logger.info("sending file " + fileToSend.getPath());
-				ByteBuffer buf = ByteBuffer.allocateDirect((int) fileToSend.length() + 10);
-				buf.clear();
-				buf.put(Files.readAllBytes(Paths.get(fileToSend
-						.getAbsolutePath())));
-				buf.put(Network.EOT);
-				buf.flip();
-				socketChannel.write(buf);
+
+				int bytesToSend = (int) (fileToSend.length()) + 1; // +1 for EOT
+				int sendBufSize = socketChannel.socket().getSendBufferSize();
+
+				// everything is ok
+				if (bytesToSend <= sendBufSize) {
+
+					ByteBuffer buf = ByteBuffer.allocateDirect(bytesToSend);
+					buf.clear();
+					buf.put(Files.readAllBytes(Paths.get(fileToSend
+							.getAbsolutePath())));
+					buf.put(Network.EOT);
+					buf.flip();
+					socketChannel.write(buf);
+				}
+
+				// split in chunks
+				else {
+					int chunks = (int) Math.ceil((double) bytesToSend
+							/ sendBufSize);
+					ByteBuffer buf = ByteBuffer.allocateDirect(sendBufSize);
+					FileInputStream in = null;
+
+					for (int chunk = 0; chunk < chunks; chunk++) {
+						byte[] fileBuffer = new byte[sendBufSize];
+						in = new FileInputStream(fileToSend);
+
+						in.read(fileBuffer);
+						buf.clear();
+						buf.put(fileBuffer);
+						buf.flip();
+						socketChannel.write(buf);
+					}
+
+					buf.put(Network.EOT);
+					buf.flip();
+					socketChannel.write(buf);
+					in.close();
+				}
 			} else {
 				logger.error("File not found");
 				return;
