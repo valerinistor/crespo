@@ -53,10 +53,12 @@ public class TransferTable extends JTable implements ICommand {
 			User source = (User) transferTableModel.getValueAt(row, 0);
 			User dest = (User) transferTableModel.getValueAt(row, 1);
 			UserFile file = (UserFile) transferTableModel.getValueAt(row, 2);
+			TransferStatus ts  = (TransferStatus) transferTableModel.getValueAt(row, 4);
 
 			if (source.equals(rowData.getSource())
 					&& dest.equals(rowData.getDestination())
-					&& file.equals(rowData.getFile())) {
+					&& file.equals(rowData.getFile())
+					&& ts != TransferStatus.COMPLETED) {
 				transferTableModel.setValueAt(rowData.getProgress(), row, 3);
 				transferTableModel.setValueAt(rowData.getStatus(), row, 4);
 			}
@@ -64,6 +66,22 @@ public class TransferTable extends JTable implements ICommand {
 		execute();
 	}
 
+	public boolean existsInProgress(TransferData td){
+		for (int row = 0; row < transferTableModel.getRowCount(); row++) {
+			User source = (User) transferTableModel.getValueAt(row, 0);
+			User dest = (User) transferTableModel.getValueAt(row, 1);
+			UserFile file = (UserFile) transferTableModel.getValueAt(row, 2);
+			TransferStatus ts  = (TransferStatus) transferTableModel.getValueAt(row, 4);
+
+			if( source.equals(td.getSource())
+					&& dest.equals(td.getDestination())
+					&& file.equals(td.getFile())
+					&& ts != TransferStatus.COMPLETED){
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Update status label based on selected row in transfer table
 	 */

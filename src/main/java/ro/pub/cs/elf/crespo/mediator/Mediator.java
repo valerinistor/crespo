@@ -2,13 +2,14 @@ package ro.pub.cs.elf.crespo.mediator;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.gui.Draw;
 import ro.pub.cs.elf.crespo.network.Network;
-import ro.pub.cs.elf.crespo.test.NetworkWorker;
 import ro.pub.cs.elf.crespo.test.WebServiceWorker;
 
 /**
@@ -17,15 +18,14 @@ import ro.pub.cs.elf.crespo.test.WebServiceWorker;
  */
 public class Mediator {
 
+	private Logger logger = Logger.getLogger(Network.class);
 	private Draw draw;
 	private User me; /* logged user */
 	private final WebServiceWorker wSworker; /* swing worker which simulate Web Service */
-	//private final NetworkWorker nwkWorker; /* swing worker which simulate network layer*/
 	private final Network nwk;
 
 	public Mediator() {
 		this.wSworker = new WebServiceWorker(this);
-		//this.nwkWorker = new NetworkWorker(this);
 		this.nwk = new Network(this);
 	}
 
@@ -68,10 +68,13 @@ public class Mediator {
 	 * @param rowData
 	 */
 	public void addTransfer(TransferData rowData) {
-		this.draw.getTransferTable().addRow(rowData);
-		if (rowData.getStatus() == TransferStatus.RECEIVING)
-			this.nwk.sendRequest(rowData);
-		//this.nwkWorker.addNetworkTask(rowData);
+		if (!this.draw.getTransferTable().existsInProgress(rowData)) {
+			this.draw.getTransferTable().addRow(rowData);
+			if (rowData.getStatus() == TransferStatus.RECEIVING)
+				this.nwk.sendRequest(rowData);
+		} else {
+			logger.info("transfer already exists");
+		}
 	}
 
 	/**
@@ -103,7 +106,6 @@ public class Mediator {
 	 */
 	public void runWorkers() {
 		wSworker.execute();
-		//nwkWorker.execute();
 		nwk.start();
 	}
 }

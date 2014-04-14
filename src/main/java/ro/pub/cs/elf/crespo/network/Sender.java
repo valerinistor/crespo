@@ -74,7 +74,15 @@ public class Sender extends Thread {
 					while (buf.hasRemaining()) {
 						socketChannel.write(buf);
 					}
+
 					td.setProgress(100);
+					SwingUtilities.invokeLater(new Runnable() {
+
+						@Override
+						public void run() {
+							Network.mediator.updateTransfers(td);
+						}
+					});
 				}
 
 				// split in chunks
