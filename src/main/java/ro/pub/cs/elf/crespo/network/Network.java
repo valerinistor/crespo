@@ -42,6 +42,7 @@ public class Network {
 		try {
 			socket = new Socket(td.getSource().getIpAddress(), td.getSource()
 					.getPort());
+
 			outStream = new DataOutputStream(socket.getOutputStream());
 			outStream.write((REQUEST_HEADER + td.getFile().getName())
 					.getBytes());
@@ -49,9 +50,16 @@ public class Network {
 			logger.error(e.getMessage());
 		}
 
+		if(socket == null) {
+			logger.info("user is offline");
+			return;
+		}
+
 		receiveResponse(socket, td.getFile().getName());
 		try {
-			outStream.close();
+			if(outStream != null) {
+				outStream.close();
+			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
