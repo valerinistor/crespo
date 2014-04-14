@@ -36,32 +36,27 @@ public class Network {
 		Network.mediator = mediator;
 	}
 
-	public void sendRequest(TransferData td) {
-		Socket socket = null;
-		DataOutputStream outStream = null;
-
+	public void sendRequest(final TransferData td) {
 		try {
-			socket = new Socket(td.getSource().getIpAddress(), td.getSource().getPort());
-			outStream = new DataOutputStream(socket.getOutputStream());
+			final Socket socket = new Socket(td.getSource().getIpAddress(), td.getSource().getPort());
+			final DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
 
-			//send request for a file
-			outStream.write((mediator.getMe().getUserName() + "|").getBytes());
-			outStream.write((td.getFile().getName()).getBytes());
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
+			// send request for a file
+			outStream.write((td.getFile().getName() + "@" + mediator.getMe().getUserName()).getBytes());
 
-		if (socket == null) {
-			logger.info("user is offline");
-			return;
-		}
+			// receive requested file
+			pool.execute(new Runnable() {
+				@Override
+				public void run() {
+					receiveResponse(socket, td.getFile().getName());
 
-		// receive requested file
-		receiveResponse(socket, td.getFile().getName());
-		try {
-			if (outStream != null) {
-				outStream.close();
-			}
+					try {
+						outStream.close();
+					} catch (IOException e) {
+						logger.error(e.getMessage());
+					}
+				}
+			});
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -70,6 +65,11 @@ public class Network {
 	public void receiveResponse(Socket socket, String fileName) {
 		DataInputStream inStream = null;
 		OutputStream outStream = null;
+
+		if (socket == null) {
+			logger.info("user is offline");
+			return;
+		}
 
 		try {
 			inStream = new DataInputStream(socket.getInputStream());
