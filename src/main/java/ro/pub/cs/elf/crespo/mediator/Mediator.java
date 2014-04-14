@@ -2,6 +2,7 @@ package ro.pub.cs.elf.crespo.mediator;
 
 import java.util.List;
 
+import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.dto.UserFile;
 import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
@@ -68,7 +69,8 @@ public class Mediator {
 	 */
 	public void addTransfer(TransferData rowData) {
 		this.draw.getTransferTable().addRow(rowData);
-		this.nwk.sendRequest(rowData);
+		if (rowData.getStatus() == TransferStatus.RECEIVING)
+			this.nwk.sendRequest(rowData);
 		//this.nwkWorker.addNetworkTask(rowData);
 	}
 
