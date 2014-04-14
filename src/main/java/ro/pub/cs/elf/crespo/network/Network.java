@@ -29,8 +29,6 @@ public class Network {
 	public static Mediator mediator;
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
-	public static String NAME_HEADER = "[NAME]";
-	public static String REQUEST_HEADER = "[GET]";
 	public static int CHUNK_SIZE = 8192;
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
 
@@ -40,11 +38,14 @@ public class Network {
 
 	public void sendRequest(final TransferData td) {
 		try {
-			final Socket socket = new Socket(td.getSource().getIpAddress(), td.getSource().getPort());
-			final DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
+			final Socket socket = new Socket(td.getSource().getIpAddress(), td
+					.getSource().getPort());
+			final DataOutputStream outStream = new DataOutputStream(
+					socket.getOutputStream());
 
 			// send request for a file
-			outStream.write((td.getFile().getName() + "@" + mediator.getMe().getUserName()).getBytes());
+			outStream.write((td.getFile().getName() + "@" + mediator.getMe()
+					.getUserName()).getBytes());
 
 			// receive requested file
 			pool.execute(new Runnable() {
@@ -128,7 +129,8 @@ public class Network {
 				selector.select();
 
 				// iterate over the events
-				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
+				for (Iterator<SelectionKey> it = selector.selectedKeys()
+						.iterator(); it.hasNext();) {
 					// get current event and REMOVE it from the list!!!
 					SelectionKey key = it.next();
 					it.remove();
@@ -169,7 +171,8 @@ public class Network {
 	private void accept(SelectionKey key) throws IOException {
 		logger.info("ACCEPT CONNECTION");
 
-		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
+		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
+				.channel();
 		SocketChannel socketChannel;
 		socketChannel = serverSocketChannel.accept();
 		socketChannel.configureBlocking(false);
