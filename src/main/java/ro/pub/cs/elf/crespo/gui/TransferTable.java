@@ -81,7 +81,11 @@ public class TransferTable extends JTable implements ICommand {
 
 		switch (status) {
 			case COMPLETED:
-				label = String.format("Completed to download file %s from %s", row.get(2), row.get(0));
+				if(((User)row.get(0)).equals(mediator.getMe())) {
+					label = String.format("Completed to send file %s to %s", row.get(2), row.get(0));
+				}else {
+					label = String.format("Completed to download file %s from %s", row.get(2), row.get(0));
+				}
 				break;
 			case SENDING:
 				label = String.format("Sending file %s to %s", row.get(2), row.get(1));

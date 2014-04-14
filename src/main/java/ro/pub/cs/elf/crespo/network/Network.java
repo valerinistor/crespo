@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.log4j.Logger;
 
 import ro.pub.cs.elf.crespo.dto.TransferData;
@@ -48,7 +50,7 @@ public class Network {
 			pool.execute(new Runnable() {
 				@Override
 				public void run() {
-					receiveResponse(socket, td.getFile().getName());
+					receiveResponse(socket, td);
 
 					try {
 						outStream.close();
@@ -62,7 +64,7 @@ public class Network {
 		}
 	}
 
-	public void receiveResponse(Socket socket, String fileName) {
+	public void receiveResponse(Socket socket, final TransferData td) {
 		DataInputStream inStream = null;
 		OutputStream outStream = null;
 
@@ -73,7 +75,7 @@ public class Network {
 
 		try {
 			inStream = new DataInputStream(socket.getInputStream());
-			outStream = new BufferedOutputStream(new FileOutputStream(fileName));
+			outStream = new BufferedOutputStream(new FileOutputStream(td.getFile().getName()));
 
 			// get number of bytes to receive
 			long bytesToReceive = inStream.readLong();
@@ -85,6 +87,14 @@ public class Network {
 				int bytesRead = inStream.read(fileBuffer);
 				outStream.write(fileBuffer, 0, bytesRead);
 				bytesReceived += bytesRead;
+
+				td.setProgress((int)(bytesReceived * 100 / bytesToReceive));
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						mediator.updateTransfers(td);
+					}
+				});
 			}
 
 		} catch (IOException e) {
