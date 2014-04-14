@@ -44,7 +44,7 @@ public class Receiver extends Thread {
 
 		logger.info("Request: " + event);
 
-		if (event != null && !event.isEmpty() && event.contains("|")) {
+		if (event != null && !event.isEmpty() && event.contains("@")) {
 			return event;
 		} else {
 			logger.error("Invalid request");

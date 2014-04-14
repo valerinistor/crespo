@@ -34,8 +34,9 @@ public class Sender extends Thread {
 		try {
 			ByteBuffer buf = null;
 			String event = (String) key.attachment();
-			String dst = event.split("|")[0];
-			String requestedFile = event.split("|")[1];
+			String[] split = event.split("@");
+			String requestedFile = split[0];
+			String dst = split[1];
 
 			List<UserFile> files = Network.mediator.getMe().getSharedFiles();
 			UserFile fileToSend = null;
@@ -81,10 +82,10 @@ public class Sender extends Thread {
 					for (int chunk = 0; chunk < chunks; chunk++) {
 						byte[] fileBuffer = new byte[Network.CHUNK_SIZE];
 
-						in.read(fileBuffer);
+						int bytesRead = in.read(fileBuffer);
 
 						buf.clear();
-						buf.put(fileBuffer);
+						buf.put(fileBuffer, 0, bytesRead);
 						buf.flip();
 
 						while (buf.hasRemaining()) {
