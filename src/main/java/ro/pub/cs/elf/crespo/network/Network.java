@@ -1,11 +1,14 @@
 package ro.pub.cs.elf.crespo.network;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.channels.SelectionKey;
@@ -28,7 +31,7 @@ public class Network {
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	public static String REQUEST_HEADER = "[GET]";
-	public static byte EOT = 0x04;
+	public static int CHUNK_SIZE = 8192;
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
 
 	public Network(Mediator mediator) {
@@ -40,24 +43,24 @@ public class Network {
 		DataOutputStream outStream = null;
 
 		try {
-			socket = new Socket(td.getSource().getIpAddress(), td.getSource()
-					.getPort());
-
+			socket = new Socket(td.getSource().getIpAddress(), td.getSource().getPort());
 			outStream = new DataOutputStream(socket.getOutputStream());
-			outStream.write((REQUEST_HEADER + td.getFile().getName())
-					.getBytes());
+
+			//send request for a file
+			outStream.write((REQUEST_HEADER + td.getFile().getName()).getBytes());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
 
-		if(socket == null) {
+		if (socket == null) {
 			logger.info("user is offline");
 			return;
 		}
 
+		// receive requested file
 		receiveResponse(socket, td.getFile().getName());
 		try {
-			if(outStream != null) {
+			if (outStream != null) {
 				outStream.close();
 			}
 		} catch (IOException e) {
@@ -67,33 +70,37 @@ public class Network {
 
 	public void receiveResponse(Socket socket, String fileName) {
 		DataInputStream inStream = null;
-		BufferedWriter bw = null;
+		OutputStream outStream = null;
 
 		try {
 			inStream = new DataInputStream(socket.getInputStream());
-			File file = new File(fileName);
-			if (!file.exists())
-				file.createNewFile();
-			FileWriter fw = new FileWriter(file.getAbsoluteFile());
-			bw = new BufferedWriter(fw);
+			outStream = new BufferedOutputStream(new FileOutputStream(fileName));
 
-			int b;
-			while ((b = inStream.read()) != EOT) {
-				bw.write((byte) b);
+			// get number of bytes to receive
+			long bytesToReceive = inStream.readLong();
+			long bytesReceived = 0;
+			byte[] fileBuffer;
+
+			while (bytesReceived < bytesToReceive) {
+				fileBuffer = new byte[Network.CHUNK_SIZE];
+				int bytesRead = inStream.read(fileBuffer);
+				outStream.write(fileBuffer, 0, bytesRead);
+				bytesReceived += bytesRead;
 			}
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		} finally {
 			try {
-				if (inStream != null && bw != null) {
+				if (inStream != null) {
 					inStream.close();
-					bw.close();
+				}
+				if (outStream != null) {
+					outStream.close();
 				}
 			} catch (IOException e) {
 				logger.error(e.getMessage());
 			}
-
 		}
 	}
 
@@ -112,8 +119,7 @@ public class Network {
 				selector.select();
 
 				// iterate over the events
-				for (Iterator<SelectionKey> it = selector.selectedKeys()
-						.iterator(); it.hasNext();) {
+				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
 					// get current event and REMOVE it from the list!!!
 					SelectionKey key = it.next();
 					it.remove();
@@ -154,8 +160,7 @@ public class Network {
 	private void accept(SelectionKey key) throws IOException {
 		logger.info("ACCEPT CONNECTION");
 
-		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
-				.channel();
+		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 		SocketChannel socketChannel;
 		socketChannel = serverSocketChannel.accept();
 		socketChannel.configureBlocking(false);

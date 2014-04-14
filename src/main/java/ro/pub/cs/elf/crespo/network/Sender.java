@@ -29,6 +29,7 @@ public class Sender extends Thread {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
 		try {
+			ByteBuffer buf = null;
 			String requestedFile = (String) key.attachment();
 			List<UserFile> files = Network.mediator.getMe().getSharedFiles();
 			UserFile fileToSend = null;
@@ -42,41 +43,46 @@ public class Sender extends Thread {
 				logger.info("sending file " + fileToSend.getPath());
 
 				int bytesToSend = (int) (fileToSend.length()) + 1; // +1 for EOT
-				int sendBufSize = socketChannel.socket().getSendBufferSize();
+
+				//Send file size to client
+				buf = ByteBuffer.allocateDirect(8);
+				buf.clear();
+				buf.putLong(fileToSend.length());
+				buf.flip();
+				socketChannel.write(buf);
 
 				// everything is ok
-				if (bytesToSend <= sendBufSize) {
+				if (bytesToSend <= Network.CHUNK_SIZE) {
 
-					ByteBuffer buf = ByteBuffer.allocateDirect(bytesToSend);
+					buf = ByteBuffer.allocateDirect(bytesToSend);
 					buf.clear();
-					buf.put(Files.readAllBytes(Paths.get(fileToSend
-							.getAbsolutePath())));
-					buf.put(Network.EOT);
+					buf.put(Files.readAllBytes(Paths.get(fileToSend.getAbsolutePath())));
 					buf.flip();
-					socketChannel.write(buf);
+					while (buf.hasRemaining()) {
+						socketChannel.write(buf);
+					}
 				}
 
 				// split in chunks
 				else {
-					int chunks = (int) Math.ceil((double) bytesToSend
-							/ sendBufSize);
-					ByteBuffer buf = ByteBuffer.allocateDirect(sendBufSize);
-					FileInputStream in = null;
+					int chunks = (int) Math.ceil((double) bytesToSend / Network.CHUNK_SIZE);
+					buf = ByteBuffer.allocateDirect(Network.CHUNK_SIZE);
+					FileInputStream in = new FileInputStream(fileToSend);
 
 					for (int chunk = 0; chunk < chunks; chunk++) {
-						byte[] fileBuffer = new byte[sendBufSize];
-						in = new FileInputStream(fileToSend);
+						byte[] fileBuffer = new byte[Network.CHUNK_SIZE];
 
 						in.read(fileBuffer);
+
 						buf.clear();
 						buf.put(fileBuffer);
 						buf.flip();
-						socketChannel.write(buf);
+
+						while (buf.hasRemaining()) {
+							socketChannel.write(buf);
+						}
 					}
 
-					buf.put(Network.EOT);
-					buf.flip();
-					socketChannel.write(buf);
 					in.close();
 				}
 			} else {
