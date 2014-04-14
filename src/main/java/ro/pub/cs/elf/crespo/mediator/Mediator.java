@@ -19,12 +19,12 @@ public class Mediator {
 	private Draw draw;
 	private User me; /* logged user */
 	private final WebServiceWorker wSworker; /* swing worker which simulate Web Service */
-	private final NetworkWorker nwkWorker; /* swing worker which simulate network layer*/
+	//private final NetworkWorker nwkWorker; /* swing worker which simulate network layer*/
 	private final Network nwk;
 
 	public Mediator() {
 		this.wSworker = new WebServiceWorker(this);
-		this.nwkWorker = new NetworkWorker(this);
+		//this.nwkWorker = new NetworkWorker(this);
 		this.nwk = new Network(this);
 	}
 
@@ -69,7 +69,7 @@ public class Mediator {
 	public void addTransfer(TransferData rowData) {
 		this.draw.getTransferTable().addRow(rowData);
 		this.nwk.sendRequest(rowData);
-		this.nwkWorker.addNetworkTask(rowData);
+		//this.nwkWorker.addNetworkTask(rowData);
 	}
 
 	/**
@@ -101,7 +101,7 @@ public class Mediator {
 	 */
 	public void runWorkers() {
 		wSworker.execute();
-		nwkWorker.execute();
+		//nwkWorker.execute();
 		nwk.start();
 	}
 }

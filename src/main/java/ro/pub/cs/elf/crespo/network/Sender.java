@@ -11,6 +11,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import ro.pub.cs.elf.crespo.dto.TransferData;
+import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
+import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.dto.UserFile;
 
 public class Sender extends Thread {
@@ -30,7 +33,10 @@ public class Sender extends Thread {
 
 		try {
 			ByteBuffer buf = null;
-			String requestedFile = (String) key.attachment();
+			String event = (String) key.attachment();
+			String dst = event.split("|")[0];
+			String requestedFile = event.split("|")[1];
+
 			List<UserFile> files = Network.mediator.getMe().getSharedFiles();
 			UserFile fileToSend = null;
 			for (UserFile file : files) {
@@ -42,6 +48,9 @@ public class Sender extends Thread {
 			if (fileToSend != null) {
 				logger.info("sending file " + fileToSend.getPath());
 
+				// add transfer to gui
+				addTransfer(fileToSend, dst);
+				
 				int bytesToSend = (int) (fileToSend.length()) + 1; // +1 for EOT
 
 				//Send file size to client
@@ -95,5 +104,16 @@ public class Sender extends Thread {
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
+	}
+	
+	public void addTransfer(UserFile file, String dst) {
+		TransferData td = new TransferData();
+		td.setSource(Network.mediator.getMe());
+		td.setDestination(new User(dst));
+		td.setFile(file);
+		td.setProgress(0);
+		td.setStatus(TransferStatus.SENDING);
+		
+		Network.mediator.addTransfer(td);
 	}
 }

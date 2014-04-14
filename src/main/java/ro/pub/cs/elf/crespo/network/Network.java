@@ -1,12 +1,9 @@
 package ro.pub.cs.elf.crespo.network;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -30,6 +27,7 @@ public class Network {
 	public static Mediator mediator;
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
+	public static String NAME_HEADER = "[NAME]";
 	public static String REQUEST_HEADER = "[GET]";
 	public static int CHUNK_SIZE = 8192;
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
@@ -47,6 +45,7 @@ public class Network {
 			outStream = new DataOutputStream(socket.getOutputStream());
 
 			//send request for a file
+			outStream.write((NAME_HEADER + mediator.getMe().getUserName()).getBytes());
 			outStream.write((REQUEST_HEADER + td.getFile().getName()).getBytes());
 		} catch (IOException e) {
 			logger.error(e.getMessage());

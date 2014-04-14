@@ -21,34 +21,45 @@ public class Receiver extends Thread {
 		logger.info("RECEIVER");
 
 		SocketChannel socketChannel = (SocketChannel) key.channel();
-		ByteBuffer buf = ByteBuffer.allocateDirect(128);
-		buf.clear();
+
 		try {
-			socketChannel.read(buf);
-
-			buf.flip();
-			byte[] bytes = new byte[buf.remaining()];
-
-			buf.get(bytes);
-			buf.position(buf.position() - bytes.length);
-
-			String requestedFile = new String(bytes);
-
-			logger.info("Request: " + requestedFile);
-
-			if (requestedFile.startsWith(Network.REQUEST_HEADER)) {
-				requestedFile = requestedFile.substring(Network.REQUEST_HEADER
-						.length());
-				key.attach(requestedFile);
-			} else {
-				logger.error("Invalid request");
+			
+			String dst = processRequest(socketChannel, Network.NAME_HEADER);
+			if (dst == null) {
 				return;
 			}
-
+			
+			String fileName = processRequest(socketChannel, Network.REQUEST_HEADER);
+			if (fileName == null) {
+				return;
+			}
+			
+			key.attach(dst + "|" + fileName);
 			key.interestOps(SelectionKey.OP_WRITE);
 			key.selector().wakeup();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
+		}
+	}
+	
+	private String processRequest(SocketChannel socketChannel, String header) throws IOException {
+		ByteBuffer buf = ByteBuffer.allocateDirect(128); 
+		buf.clear();
+		socketChannel.read(buf);
+		buf.flip();
+
+		byte[] bytes = new byte[buf.remaining()];
+		buf.get(bytes);
+		//buf.position(buf.position() - bytes.length);
+		String event = new String(bytes);
+
+		logger.info("Request: " + event);
+
+		if (event.startsWith(header)) {
+			return event.substring(header.length());
+		} else {
+			logger.error("Invalid request");
+			return null;
 		}
 	}
 
