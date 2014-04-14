@@ -23,18 +23,7 @@ public class Receiver extends Thread {
 		SocketChannel socketChannel = (SocketChannel) key.channel();
 
 		try {
-			
-			String dst = processRequest(socketChannel, Network.NAME_HEADER);
-			if (dst == null) {
-				return;
-			}
-			
-			String fileName = processRequest(socketChannel, Network.REQUEST_HEADER);
-			if (fileName == null) {
-				return;
-			}
-			
-			key.attach(dst + "|" + fileName);
+			key.attach(processRequest(socketChannel));
 			key.interestOps(SelectionKey.OP_WRITE);
 			key.selector().wakeup();
 		} catch (IOException e) {
@@ -42,7 +31,7 @@ public class Receiver extends Thread {
 		}
 	}
 	
-	private String processRequest(SocketChannel socketChannel, String header) throws IOException {
+	private String processRequest(SocketChannel socketChannel) throws IOException {
 		ByteBuffer buf = ByteBuffer.allocateDirect(128); 
 		buf.clear();
 		socketChannel.read(buf);
@@ -55,8 +44,8 @@ public class Receiver extends Thread {
 
 		logger.info("Request: " + event);
 
-		if (event.startsWith(header)) {
-			return event.substring(header.length());
+		if (event != null && !event.isEmpty() && event.contains("|")) {
+			return event;
 		} else {
 			logger.error("Invalid request");
 			return null;

@@ -45,8 +45,8 @@ public class Network {
 			outStream = new DataOutputStream(socket.getOutputStream());
 
 			//send request for a file
-			outStream.write((NAME_HEADER + mediator.getMe().getUserName()).getBytes());
-			outStream.write((REQUEST_HEADER + td.getFile().getName()).getBytes());
+			outStream.write((mediator.getMe().getUserName() + "|").getBytes());
+			outStream.write((td.getFile().getName()).getBytes());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
