@@ -4,6 +4,7 @@
 	<!-- Sets variables which can later be used -->
 	<property name="main.src.dir" value="src/main/java" />
 	<property name="main.res.dir" value="src/main/resources" />
+	<property name="test.src.dir" value="src/test/java" />
 	<property name="build.dir" value="build" />
 	<property name="lib.dir" value="lib" />
 
@@ -33,6 +34,11 @@
 			includeantruntime="false">
 			<classpath refid="lib.class.path" />
 		</javac>
+		<echo message="Compiling test sources" />
+		<javac srcdir="${test.src.dir}" destdir="${build.dir}"
+			includeantruntime="false">
+			<classpath refid="lib.class.path" />
+		</javac>
 	</target>
 
 	<target name="run">
@@ -43,8 +49,20 @@
 		</java>
 	</target>
 
+
+	<!-- Run the JUnit Tests -->
+	<target name="junit" depends="compile">
+		<junit printsummary="false" fork="true" haltonfailure="yes">
+			<classpath refid="lib.class.path" />
+			<formatter type="plain" usefile="false" />
+			<batchtest>
+				<fileset dir="${test.src.dir}" />
+			</batchtest>
+		</junit>
+	</target>
+
 	<!-- Main target -->
-	<target name="main" depends="compile">
+	<target name="main" depends="junit, compile">
 		<parallel threadCount="3">
 			<sequential>
 				<sleep seconds="2" />
