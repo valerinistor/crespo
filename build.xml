@@ -49,9 +49,8 @@
 		</java>
 	</target>
 
-
 	<!-- Run the JUnit Tests -->
-	<target name="junit" depends="compile">
+	<target name="junit">
 		<junit printsummary="false" fork="true" haltonfailure="yes">
 			<classpath refid="lib.class.path" />
 			<formatter type="plain" usefile="false" />
@@ -62,26 +61,23 @@
 	</target>
 
 	<!-- Main target -->
-	<target name="main" depends="junit, compile">
-		<parallel threadCount="3">
-			<sequential>
-				<sleep seconds="2" />
-				<antcall target="run">
-					<param name="arg" value="bugs" />
-				</antcall>
-			</sequential>
-			<sequential>
-				<sleep seconds="2" />
-				<antcall target="run">
-					<param name="arg" value="daffy" />
-				</antcall>
-			</sequential>
-			<sequential>
-				<sleep seconds="2" />
-				<antcall target="run">
-					<param name="arg" value="sam" />
-				</antcall>
-			</sequential>
-		</parallel>
+	<target name="main" depends="compile">
+	<parallel>
+		<daemons>
+			<antcall target="run">
+				<param name="arg" value="bugs" />
+			</antcall>
+			<antcall target="run">
+				<param name="arg" value="sam" />
+			</antcall>
+			<antcall target="run">
+				<param name="arg" value="daffy" />
+			</antcall>
+		</daemons>
+		<sequential>
+			<sleep seconds="3" />
+			<antcall target="junit" />
+		</sequential>
+	</parallel>
 	</target>
 </project>

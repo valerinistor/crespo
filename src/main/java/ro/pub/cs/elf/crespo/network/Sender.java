@@ -17,14 +17,17 @@ import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.TransferData.TransferStatus;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.dto.UserFile;
+import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class Sender extends Thread {
 
 	private Logger logger = Logger.getLogger(Sender.class);
 	private final SelectionKey key;
+	private final Mediator mediator;
 
-	public Sender(SelectionKey key) {
+	public Sender(Mediator mediator, SelectionKey key) {
 		this.key = key;
+		this.mediator = mediator;
 	}
 
 	@Override
@@ -40,7 +43,7 @@ public class Sender extends Thread {
 			String requestedFile = split[0];
 			String dst = split[1];
 
-			List<UserFile> files = Network.mediator.getMe().getSharedFiles();
+			List<UserFile> files = mediator.getMe().getSharedFiles();
 			UserFile fileToSend = null;
 			for (UserFile file : files) {
 				if (file.getName().equals(requestedFile)) {
@@ -48,6 +51,7 @@ public class Sender extends Thread {
 				}
 			}
 
+			logger.info(mediator.getMe() + " try to send file " + fileToSend);
 			if (fileToSend != null) {
 				logger.info("sending file " + fileToSend.getPath());
 
@@ -68,8 +72,7 @@ public class Sender extends Thread {
 
 					buf = ByteBuffer.allocateDirect(bytesToSend);
 					buf.clear();
-					buf.put(Files.readAllBytes(Paths.get(fileToSend
-							.getAbsolutePath())));
+					buf.put(Files.readAllBytes(Paths.get(fileToSend.getAbsolutePath())));
 					buf.flip();
 					while (buf.hasRemaining()) {
 						socketChannel.write(buf);
@@ -80,7 +83,7 @@ public class Sender extends Thread {
 
 						@Override
 						public void run() {
-							Network.mediator.updateTransfers(td);
+							mediator.updateTransfers(td);
 						}
 					});
 				}
@@ -93,9 +96,21 @@ public class Sender extends Thread {
 					FileInputStream in = new FileInputStream(fileToSend);
 
 					for (int chunk = 0; chunk < chunks; chunk++) {
+						td.setProgress((int) ((chunk + 1) * 100f / chunks));
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								mediator.updateTransfers(td);
+							}
+						});
+
 						byte[] fileBuffer = new byte[Network.CHUNK_SIZE];
 
 						int bytesRead = in.read(fileBuffer);
+
+						if(bytesRead == -1) {
+							break;
+						}
 
 						buf.clear();
 						buf.put(fileBuffer, 0, bytesRead);
@@ -104,15 +119,6 @@ public class Sender extends Thread {
 						while (buf.hasRemaining()) {
 							socketChannel.write(buf);
 						}
-
-						td.setProgress((int) ((chunk + 1) * 100f / chunks));
-						SwingUtilities.invokeLater(new Runnable() {
-
-							@Override
-							public void run() {
-								Network.mediator.updateTransfers(td);
-							}
-						});
 					}
 					in.close();
 				}
@@ -131,13 +137,13 @@ public class Sender extends Thread {
 
 	public TransferData addTransfer(UserFile file, String dst) {
 		TransferData td = new TransferData();
-		td.setSource(Network.mediator.getMe());
+		td.setSource(mediator.getMe());
 		td.setDestination(new User(dst));
 		td.setFile(file);
 		td.setProgress(0);
 		td.setStatus(TransferStatus.SENDING);
 
-		Network.mediator.addTransfer(td);
+		mediator.addTransfer(td);
 		return td;
 	}
 }

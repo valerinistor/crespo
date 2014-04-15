@@ -26,32 +26,35 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 public class Network {
 
 	private Logger logger = Logger.getLogger(Network.class);
-	public static Mediator mediator;
+	private final Mediator mediator;
 	private Selector selector;
 	private ServerSocketChannel serverSocketChannel;
 	public static int CHUNK_SIZE = 8192;
 	public static ExecutorService pool = Executors.newFixedThreadPool(5);
 
 	public Network(Mediator mediator) {
-		Network.mediator = mediator;
+		this.mediator = mediator;
 	}
 
-	public void sendRequest(final TransferData td) {
+	public Network() {
+		this(null);
+	}
+
+	public void sendFileRequest(final TransferData td) {
 		try {
-			final Socket socket = new Socket(td.getSource().getIpAddress(), td
-					.getSource().getPort());
-			final DataOutputStream outStream = new DataOutputStream(
-					socket.getOutputStream());
+			final Socket socket = new Socket(
+					td.getSource().getIpAddress(),
+					td.getSource().getPort());
+			final DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
 
 			// send request for a file
-			outStream.write((td.getFile().getName() + "@" + mediator.getMe()
-					.getUserName()).getBytes());
+			outStream.write((td.getFile().getName() + "@" + mediator.getMe().getUserName()).getBytes());
 
 			// receive requested file
 			pool.execute(new Runnable() {
 				@Override
 				public void run() {
-					receiveResponse(socket, td);
+					receiveFile(socket, td);
 
 					try {
 						outStream.close();
@@ -65,7 +68,7 @@ public class Network {
 		}
 	}
 
-	public void receiveResponse(Socket socket, final TransferData td) {
+	public void receiveFile(Socket socket, final TransferData td) {
 		DataInputStream inStream = null;
 		OutputStream outStream = null;
 
@@ -89,13 +92,15 @@ public class Network {
 				outStream.write(fileBuffer, 0, bytesRead);
 				bytesReceived += bytesRead;
 
-				td.setProgress((int)(bytesReceived * 100 / bytesToReceive));
-				SwingUtilities.invokeLater(new Runnable() {
-					@Override
-					public void run() {
-						mediator.updateTransfers(td);
-					}
-				});
+				if (mediator.getDraw() != null) {
+					td.setProgress((int) (bytesReceived * 100 / bytesToReceive));
+					SwingUtilities.invokeLater(new Runnable() {
+						@Override
+						public void run() {
+							mediator.updateTransfers(td);
+						}
+					});
+				}
 			}
 
 		} catch (IOException e) {
@@ -119,6 +124,7 @@ public class Network {
 			selector = Selector.open();
 			serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.configureBlocking(false);
+			logger.info("bind " + mediator.getMe().getIpAddress() + mediator.getMe().getPort());
 			serverSocketChannel.socket().bind(
 					new InetSocketAddress(mediator.getMe().getIpAddress(),
 							mediator.getMe().getPort()));
@@ -129,8 +135,7 @@ public class Network {
 				selector.select();
 
 				// iterate over the events
-				for (Iterator<SelectionKey> it = selector.selectedKeys()
-						.iterator(); it.hasNext();) {
+				for (Iterator<SelectionKey> it = selector.selectedKeys().iterator(); it.hasNext();) {
 					// get current event and REMOVE it from the list!!!
 					SelectionKey key = it.next();
 					it.remove();
@@ -142,7 +147,7 @@ public class Network {
 						pool.execute(new Receiver(key));
 					} else if (key.isWritable()) {
 						key.interestOps(0);
-						pool.execute(new Sender(key));
+						pool.execute(new Sender(this.mediator, key));
 					}
 				}
 			}
@@ -169,10 +174,9 @@ public class Network {
 	}
 
 	private void accept(SelectionKey key) throws IOException {
-		logger.info("ACCEPT CONNECTION");
+		logger.info(mediator.getMe() + " ACCEPT CONNECTION");
 
-		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key
-				.channel();
+		ServerSocketChannel serverSocketChannel = (ServerSocketChannel) key.channel();
 		SocketChannel socketChannel;
 		socketChannel = serverSocketChannel.accept();
 		socketChannel.configureBlocking(false);

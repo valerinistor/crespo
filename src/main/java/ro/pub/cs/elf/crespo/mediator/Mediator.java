@@ -18,7 +18,7 @@ import ro.pub.cs.elf.crespo.test.WebServiceWorker;
  */
 public class Mediator {
 
-	private Logger logger = Logger.getLogger(Network.class);
+	private Logger logger = Logger.getLogger(Mediator.class);
 	private Draw draw;
 	private User me; /* logged user */
 	private final WebServiceWorker wSworker; /* swing worker which simulate Web Service */
@@ -71,7 +71,7 @@ public class Mediator {
 		if (!this.draw.getTransferTable().existsInProgress(rowData)) {
 			this.draw.getTransferTable().addRow(rowData);
 			if (rowData.getStatus() == TransferStatus.RECEIVING)
-				this.nwk.sendRequest(rowData);
+				this.nwk.sendFileRequest(rowData);
 		} else {
 			logger.info("transfer already exists");
 		}
@@ -101,11 +101,22 @@ public class Mediator {
 		return me;
 	}
 
+	public Draw getDraw(){
+		return draw;
+	}
+
 	/**
 	 * execute swing workers
 	 */
 	public void runWorkers() {
 		wSworker.execute();
+		runLocalServer();
+	}
+
+	/**
+	 * run local server to accept client connection
+	 */
+	public void runLocalServer(){
 		nwk.start();
 	}
 }
