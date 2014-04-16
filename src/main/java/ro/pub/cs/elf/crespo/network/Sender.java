@@ -125,6 +125,11 @@ public class Sender extends Thread {
 
 			} else {
 				logger.error("File not found");
+				buf = ByteBuffer.allocateDirect(8);
+				buf.clear();
+				buf.putLong(-1);
+				buf.flip();
+				socketChannel.write(buf);
 				return;
 			}
 
