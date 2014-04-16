@@ -1,69 +1,60 @@
-crespo
+Crespo
 ======
-
 File sharing client
+-------------------
+Contributors:
+- Valeri Nistor   - 342C1
+- Adrian Nicolau  - 342C1
 
-##Dependencies
->Ant,Swing
+Dependencies
+- Ant
+- Swing
+- JUnit
+- Log4j
 
-##Useful commands
+Build project
+-------------
+> `ant -f build.xml`
 
-#### build project
->`ant -f build.xml`
+Cuprins
+-------
+1. GUI
+2. Network
+3. Web Service + Web Service Client TODO
 
---------------------------------------------------------------------------------
-Cuprins:
-        1. Informatie Generala.
-        2. Reguli Compilare/Rulare.
-        3. Descriere Implementare.
---------------------------------------------------------------------------------
-                            1. Informatie Generala
---------------------------------------------------------------------------------
-                                Tema 1 - IDP
-Nume:
-    Valeri Nistor  - 342 C1
-    Adrian Nicolau - 342 C1
-
-Continut Arhiva:
-    1. src/main/java/ro/pub/cs/elf/crespo/app:
-        Crespo.java  ICommand.java
-    2. src/main/java/ro/pub/cs/elf/crespo/dto:
-        File.java  TransferData.java  User.java
-    3. src/main/java/ro/pub/cs/elf/crespo/gui:
-        AbstractList.java  CommandListener.java  Draw.java
-        FileList.java ProgressCellRender.java  TransferTable.java
-        TransferTableModel.java UserList.java
-    4. src/main/java/ro/pub/cs/elf/crespo/mediator:
-        Mediator.java
-    5. src/main/java/ro/pub/cs/elf/crespo/test:
-        NetworkWorker.java  WebServiceWorker.java
-    6. src/main/resources:
-        user.properties
-    7. build.xml
-    8. README.md
---------------------------------------------------------------------------------
-                            2. Reguli Compilare/Rulare
---------------------------------------------------------------------------------
-Compilare si rulare: ant -f build.xm
---------------------------------------------------------------------------------
-                            3. Descriere Implementare
---------------------------------------------------------------------------------
-    Obiectivul principal a fost realizarea unei interfete grafice pentru un
-client de partajare de fisiere. Aceasta este implementata folosind Swing GUI
+GUI
+---
+Obiectivul principal a fost realizarea unei interfețe grafice pentru un
+client de partajare de fișiere. Aceasta este implementată folosind Swing GUI
 widget toolkit.
-Aplicatia contine 4 componente principale:
-    1. Lista de utilizatori
-    2. Lista de fisiere a utilizatorului selectat.
-    3. Tabela ce contine informatii despre transferuri
-    4. Status bar.
-Arhitectura se baseaza pe implementarea Mediator Pattern care defineste un
-obiect care incapsuleaza un set de obiecte si cum acestea interactioneaza intre
-ele. Componentele principale sunt: clientul GUI, serviciul web si nivelul retea.
-Pentru realizarea actiunilor utilizatorului am implementat Command Pattern, unde
-fiecare componenta gui, urmeaza propria logica de executie.
-Pentru simularea nivelului de retea si a serviciului web am folosit fire de
-executie separate, care simuleaza aparitia diferitelor evenimente, precum: un
-utilizator intra sau iese, soseste lista de fisiere a unui utilizator, se adauga
-un nou transfer. Toate aceste evenimente se publica catre clientul de gui.
---------------------------------------------------------------------------------
+Aplicația conține 4 componente principale:
+- Lista de utilizatori
+- Lista de fișiere a utilizatorului selectat
+- Tabela ce conține informații despre transferuri
+- Status bar
 
+Arhitectura se bazează pe implementarea Mediator Pattern care definește un
+obiect ce încapsulează un set de obiecte și descrie interacțiunea dintre
+ele. Componentele principale sunt: clientul GUI, nivelul rețea și serviciul web
+Pentru realizarea acțiunilor utilizatorului am implementat Command Pattern, unde
+fiecare componentă gui își urmează propria logică de execuție.
+Pentru simularea nivelului rețea și a serviciului web am folosit fire de
+execuție separate care simulează apariția diferitelor evenimente, precum: un
+utilizator intră sau iese, sosește lista de fișiere a unui utilizator, se adaugă
+un nou transfer. Toate aceste evenimente se publică către clientul gui.
+
+Network
+-------
+Pentru implementarea acestui nivel am separat logica în trei părți:
+- Sender - logica de trimitere a unui fișier
+- Receiver - logica de primire a unui fișier
+- Network - logica de management a conexiunilor
+
+În clasa Network se pornește serverul care așteaptă conexiuni într-o buclă
+infinită și ia decizii în funcție de tipul cheilor selectate. Serverul deține
+un pool de executori și pornește câte un Sender sau Receiver (ambele sunt obiecte
+de tip Thread) pentru a răspunde tuturor cererilor.
+Fișierele sunt trimise (și respectiv primite) în chunk-uri folosind obiecte 
+ByteBuffer. Prin mediator se realizează actualizarea interfeței grafice în funcție
+de procentul de upload/download al fișierelor. Actualizările se fac pe threaduri
+separate prin apeluri `SwingUtilities.invokeLater`.
