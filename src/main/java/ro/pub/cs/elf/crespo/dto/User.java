@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * User POJO Object
- * 
+ *
  */
 public class User {
 

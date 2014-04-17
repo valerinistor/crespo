@@ -36,10 +36,10 @@ public class Network {
 		this.mediator = mediator;
 	}
 
-	public Network() {
-		this(null);
-	}
-
+	/**
+	 * Send request for a file as a client
+	 * @param td
+	 */
 	public void sendFileRequest(final TransferData td) {
 		try {
 			final Socket socket = new Socket(
@@ -68,7 +68,12 @@ public class Network {
 		}
 	}
 
-	public void receiveFile(Socket socket, final TransferData td) {
+	/**
+	 * receive requested file from
+	 * @param socket
+	 * @param td
+	 */
+	private void receiveFile(Socket socket, final TransferData td) {
 		DataInputStream inStream = null;
 		OutputStream outStream = null;
 
@@ -94,6 +99,7 @@ public class Network {
 
 				if (mediator.getDraw() != null) {
 					td.setProgress((int) (bytesReceived * 100 / bytesToReceive));
+					// gui - update progres status
 					SwingUtilities.invokeLater(new Runnable() {
 						@Override
 						public void run() {
@@ -119,6 +125,10 @@ public class Network {
 		}
 	}
 
+	/**
+	 * Start local server
+	 * manage client connections
+	 */
 	public void start() {
 		try {
 			selector = Selector.open();
@@ -127,7 +137,7 @@ public class Network {
 			logger.info("bind " + mediator.getMe().getIpAddress() + mediator.getMe().getPort());
 			serverSocketChannel.socket().bind(
 					new InetSocketAddress(mediator.getMe().getIpAddress(),
-							mediator.getMe().getPort()));
+					mediator.getMe().getPort()));
 			serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
 			while (true) {
@@ -140,18 +150,23 @@ public class Network {
 					SelectionKey key = it.next();
 					it.remove();
 
+					// accept new connection
 					if (key.isAcceptable()) {
 						accept(key);
-					} else if (key.isReadable()) {
+					}
+					// receive new stuff from socket
+					else if (key.isReadable()) {
 						key.interestOps(0);
 						pool.execute(new Receiver(key));
-					} else if (key.isWritable()) {
+					}
+					// send data on socket
+					else if (key.isWritable()) {
 						key.interestOps(0);
 						pool.execute(new Sender(this.mediator, key));
 					}
 				}
 			}
-
+		// hande
 		} catch (IOException e) {
 			logger.fatal(e.getMessage());
 		} finally {
@@ -170,9 +185,13 @@ public class Network {
 					logger.error(e.getMessage());
 				}
 		}
-
 	}
 
+	/**
+	 * Accept new connection from clients
+	 * @param key
+	 * @throws IOException
+	 */
 	private void accept(SelectionKey key) throws IOException {
 		logger.info(mediator.getMe() + " ACCEPT CONNECTION");
 

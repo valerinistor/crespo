@@ -30,6 +30,10 @@ public class Sender extends Thread {
 		this.mediator = mediator;
 	}
 
+	/**
+	 * Runnable
+	 * send file on socket based on request
+	 */
 	@Override
 	public void run() {
 		logger.info("SENDER");
@@ -140,6 +144,12 @@ public class Sender extends Thread {
 		}
 	}
 
+	/**
+	 * Add new transfer to GUI in transfer table in SENDING status
+	 * @param file
+	 * @param dst
+	 * @return
+	 */
 	public TransferData addTransfer(UserFile file, String dst) {
 		TransferData td = new TransferData();
 		td.setSource(mediator.getMe());

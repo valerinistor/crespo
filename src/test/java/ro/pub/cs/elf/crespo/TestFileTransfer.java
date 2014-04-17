@@ -68,10 +68,8 @@ public class TestFileTransfer extends TestCase {
 					receivedFile.getCanonicalPath());
 
 			MessageDigest md = MessageDigest.getInstance("MD5");
-			byte[] expectedBytes = md.digest(
-					Files.readAllBytes(Paths.get(fileToReceive.getAbsolutePath())));
-			byte[] actualBytes = md.digest(
-					Files.readAllBytes(Paths.get(receivedFile.getAbsolutePath())));
+			byte[] expectedBytes = md.digest(Files.readAllBytes(Paths.get(fileToReceive.getAbsolutePath())));
+			byte[] actualBytes = md.digest(Files.readAllBytes(Paths.get(receivedFile.getAbsolutePath())));
 
 			// check md5sum of original and downloaded file
 			Assert.assertArrayEquals(expectedBytes, actualBytes);
@@ -82,5 +80,26 @@ public class TestFileTransfer extends TestCase {
 		} catch (InterruptedException ie) {
 			fail();
 		}
+	}
+
+	@Test
+	public void testNotFound() {
+		Mediator samFakeMed = new Mediator();
+		samFakeMed.registerMe(sam);
+
+		Network network = new Network(samFakeMed);
+		UserFile fileToReceive = new UserFile(bugs, ".bluff");
+
+		TransferData td = new TransferData();
+		td.setDestination(sam);
+		td.setSource(bugs);
+		td.setFile(fileToReceive);
+		td.setProgress(0);
+		td.setStatus(TransferStatus.SENDING);
+
+		// send request for file
+		network.sendFileRequest(td);
+
+		Assert.assertEquals(new UserFile(".bluff").length(), 0);
 	}
 }

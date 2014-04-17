@@ -7,7 +7,7 @@ import ro.pub.cs.elf.crespo.app.ICommand;
 import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 /**
- * Parametrized list {@link JList} 
+ * Parametrized list {@link JList}
  * @param <E> List type
  */
 public abstract class AbstractList<E> extends JList<E> implements ICommand {

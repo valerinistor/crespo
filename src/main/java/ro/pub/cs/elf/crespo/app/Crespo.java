@@ -22,7 +22,7 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 /**
  * Main window class
- * 
+ *
  */
 public class Crespo extends JFrame {
 
@@ -91,7 +91,7 @@ public class Crespo extends JFrame {
 
 	/**
 	 * load logged user from property file
-	 * 
+	 *
 	 * @return
 	 */
 	public static User loadUser(String me) {
@@ -123,7 +123,7 @@ public class Crespo extends JFrame {
 
 	/**
 	 * main run method
-	 * 
+	 *
 	 * @param args program arguments
 	 */
 	public static void main(String[] args) {

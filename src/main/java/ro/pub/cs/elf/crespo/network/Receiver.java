@@ -16,6 +16,10 @@ public class Receiver extends Thread {
 		this.key = key;
 	}
 
+	/**
+	 * Runnable
+	 * Receive data from socker
+	 */
 	@Override
 	public void run() {
 		logger.info("RECEIVER");
@@ -30,16 +34,21 @@ public class Receiver extends Thread {
 			logger.error(e.getMessage());
 		}
 	}
-	
+
+	/**
+	 * Extract user name and file name from request
+	 * @param socketChannel
+	 * @return
+	 * @throws IOException
+	 */
 	private String processRequest(SocketChannel socketChannel) throws IOException {
-		ByteBuffer buf = ByteBuffer.allocateDirect(128); 
+		ByteBuffer buf = ByteBuffer.allocateDirect(128);
 		buf.clear();
 		socketChannel.read(buf);
 		buf.flip();
 
 		byte[] bytes = new byte[buf.remaining()];
 		buf.get(bytes);
-		//buf.position(buf.position() - bytes.length);
 		String event = new String(bytes);
 
 		logger.info("Request: " + event);
