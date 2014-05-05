@@ -2,11 +2,14 @@
 <project name="crespo" basedir="." default="main">
 
 	<!-- Sets variables which can later be used -->
+	<property environment="env" />
 	<property name="main.src.dir" value="src/main/java" />
 	<property name="main.res.dir" value="src/main/resources" />
 	<property name="test.src.dir" value="src/test/java" />
-	<property name="build.dir" value="build" />
+	<property name="build.dir" value="build/crespo" />
 	<property name="lib.dir" value="lib" />
+	<property name="web.dir" value="src/web" />
+	<property name="web.build.dir" value="build/web" />
 
 	<!-- Define the classpath which includes the jars and the classes after 
 		compiling -->
@@ -61,23 +64,55 @@
 	</target>
 
 	<!-- Main target -->
-	<target name="main" depends="compile">
-	<parallel>
-		<daemons>
-			<antcall target="run">
-				<param name="arg" value="bugs" />
-			</antcall>
-			<antcall target="run">
-				<param name="arg" value="sam" />
-			</antcall>
-			<antcall target="run">
-				<param name="arg" value="daffy" />
-			</antcall>
-		</daemons>
-		<sequential>
-			<sleep seconds="3" />
-			<antcall target="junit" />
-		</sequential>
-	</parallel>
+	<target name="main" depends="deploy, compile">
+		<parallel>
+			<daemons>
+				<antcall target="run">
+					<param name="arg" value="bugs" />
+				</antcall>
+				<antcall target="run">
+					<param name="arg" value="sam" />
+				</antcall>
+				<antcall target="run">
+					<param name="arg" value="daffy" />
+				</antcall>
+			</daemons>
+			<sequential>
+				<sleep seconds="3" />
+				<antcall target="junit" />
+			</sequential>
+		</parallel>
+	</target>
+
+	<target name="buildweb">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${web.build.dir}" />
+		<javac srcdir="${web.dir}" destdir="${web.build.dir}"
+			includeantruntime="false">
+		</javac>
+	</target>
+
+	<target name="deploy" depends="buildweb">
+		<copy todir="${env.CATALINA_HOME}/webapps/axis/WEB-INF/classes"
+			preservelastmodified="true">
+			<fileset dir="${web.build.dir}">
+				<include name="*.class" />
+			</fileset>
+		</copy>
+		<java classname="org.apache.axis.client.AdminClient" fork="true">
+			<classpath>
+				<pathelement path="${env.AXISCLASSPATH}" />
+			</classpath>
+			<arg line="-lhttp://localhost:8080/axis/services/AdminService deploy.wsdd" />
+		</java>
+	</target>
+
+	<target name="undeploy" depends="buildweb">
+		<java classname="org.apache.axis.client.AdminClient" fork="true">
+			<classpath>
+				<pathelement path="${env.AXISCLASSPATH}" />
+			</classpath>
+			<arg line="-lhttp://localhost:8080/axis/services/AdminService undeploy.wsdd" />
+		</java>
 	</target>
 </project>
