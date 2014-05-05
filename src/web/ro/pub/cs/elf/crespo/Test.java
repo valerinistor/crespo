@@ -1,8 +1,8 @@
 package ro.pub.cs.elf.crespo;
 public class Test {
-	public int a;
+	public static int a;
 
-	public int inc() {
+	public static int inc() {
 		return a++;
 	}
 }

@@ -85,7 +85,7 @@
 	</target>
 
 	<target name="buildweb">
-		<delete dir="${build.dir}" />
+		<delete dir="${web.build.dir}" />
 		<mkdir dir="${web.build.dir}" />
 		<javac srcdir="${web.dir}" destdir="${web.build.dir}"
 			includeantruntime="false">
@@ -96,7 +96,7 @@
 		<copy todir="${env.CATALINA_HOME}/webapps/axis/WEB-INF/classes"
 			preservelastmodified="true">
 			<fileset dir="${web.build.dir}">
-				<include name="*.class" />
+				<include name="**" />
 			</fileset>
 		</copy>
 		<java classname="org.apache.axis.client.AdminClient" fork="true">
