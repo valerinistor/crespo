@@ -10,27 +10,25 @@ import ro.pub.cs.elf.crespo.dto.TransferData;
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.gui.Draw;
 import ro.pub.cs.elf.crespo.network.Network;
-import ro.pub.cs.elf.crespo.test.WebServiceWorker;
+import ro.pub.cs.elf.crespo.wsclient.WSClient;
 
 /**
- * Mediator class which encapsulate
- * GUI client, Web Service and Network Layer
+ * Mediator class which encapsulate GUI client, Web Service and Network Layer
  */
 public class Mediator {
 
 	private Logger logger = Logger.getLogger(Mediator.class);
 	private Draw draw;
 	private User me; /* logged user */
-	private final WebServiceWorker wSworker; /* swing worker which simulate Web Service */
-	private final Network nwk;
+	private WSClient wsClient; /* swing worker which simulate Web Service */
+	private Network nwk;
 
 	public Mediator() {
-		this.wSworker = new WebServiceWorker(this);
-		this.nwk = new Network(this);
 	}
 
 	/**
 	 * register GUI client
+	 * 
 	 * @param draw
 	 */
 	public void registerDraw(Draw draw) {
@@ -39,6 +37,7 @@ public class Mediator {
 
 	/**
 	 * register logged user
+	 * 
 	 * @param user
 	 */
 	public void registerMe(User me) {
@@ -47,6 +46,7 @@ public class Mediator {
 
 	/**
 	 * add user to GUI user list
+	 * 
 	 * @param user
 	 */
 	public void addUser(User user) {
@@ -55,6 +55,7 @@ public class Mediator {
 
 	/**
 	 * add files list to GUI
+	 * 
 	 * @param files
 	 */
 	public void addFiles(List<UserFile> files) {
@@ -63,8 +64,8 @@ public class Mediator {
 	}
 
 	/**
-	 * add new transfer to transfer table
-	 * and also to network layer
+	 * add new transfer to transfer table and also to network layer
+	 * 
 	 * @param rowData
 	 */
 	public void addTransfer(TransferData rowData) {
@@ -79,6 +80,7 @@ public class Mediator {
 
 	/**
 	 * update status bar label
+	 * 
 	 * @param status
 	 */
 	public void updateStatus(String status) {
@@ -87,6 +89,7 @@ public class Mediator {
 
 	/**
 	 * update existing transfer with new data
+	 * 
 	 * @param rowData
 	 */
 	public void updateTransfers(TransferData rowData) {
@@ -95,13 +98,14 @@ public class Mediator {
 
 	/**
 	 * return logged user
+	 * 
 	 * @return
 	 */
 	public User getMe() {
 		return me;
 	}
 
-	public Draw getDraw(){
+	public Draw getDraw() {
 		return draw;
 	}
 
@@ -109,14 +113,16 @@ public class Mediator {
 	 * execute swing workers
 	 */
 	public void runWorkers() {
-		wSworker.execute();
+		this.wsClient = new WSClient(this);
+		this.nwk = new Network(this);
+		wsClient.execute();
 		runLocalServer();
 	}
 
 	/**
 	 * run local server to accept client connection
 	 */
-	public void runLocalServer(){
+	public void runLocalServer() {
 		nwk.start();
 	}
 }

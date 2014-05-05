@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * User POJO Object
- *
+ * 
  */
 public class User {
 
@@ -15,6 +15,7 @@ public class User {
 	private List<TransferData> transfers; // user transfers
 	private int port; // user port
 	private Inet4Address ipAddress; // user ip address
+	private String wsip; // web service ip address
 
 	public User(String userName) {
 		this.userName = userName;
@@ -67,6 +68,14 @@ public class User {
 
 	public void setIpAddress(Inet4Address ipAddress) {
 		this.ipAddress = ipAddress;
+	}
+
+	public String getWsip() {
+		return wsip;
+	}
+
+	public void setWsip(String wsip) {
+		this.wsip = wsip;
 	}
 
 	@Override
