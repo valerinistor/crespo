@@ -1,50 +1,32 @@
 package ro.pub.cs.elf.crespo;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class WS {
 
-	private static File db = new File("database.txt");
-
-	public void registerUser(String user) throws IOException {
-		if (!db.exists()) {
-			db.createNewFile();
-		}
-		FileWriter fw = new FileWriter(db.getAbsoluteFile());
-		BufferedWriter bw = new BufferedWriter(fw);
-		bw.write(user);
-		bw.close();
+	private static Map<String, String> db = new HashMap<String, String>();
+	private static final String SEP = "@";
+	
+	public void registerUser(String userData) throws IOException {
+		String userName = userData.substring(0, userData.indexOf(SEP));
+		String data = userData.substring(userData.indexOf(SEP) + 1);
+		db.put(userName, data);
 	}
 
 	public void unregisterUser(String user) throws IOException {
-		File tempFile = new File(db.getAbsolutePath() + "temp");
-
-		BufferedReader reader = new BufferedReader(new FileReader(db));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-		String currentLine;
-
-		while ((currentLine = reader.readLine()) != null) {
-			if (currentLine.split("|")[0].equals(user))
-				continue;
-			writer.write(currentLine);
-		}
-
-		reader.close();
-		writer.close();
-		tempFile.renameTo(db);
+		db.remove(user);
 	}
 
-	public String retrieveUsers() throws IOException {
-		return new String(Files.readAllBytes(Paths.get(db.getAbsolutePath())),
-				StandardCharsets.UTF_8);
+	public String retrieveUsers(String solicitant) throws IOException {
+		StringBuilder sb = new StringBuilder();
+		for (Map.Entry<String, String> e : db.entrySet()) {
+			if (!e.getKey().equals(solicitant)) {
+				sb.append(e.getKey() + SEP + e.getValue());
+				sb.append(System.getProperty("line.separator"));
+			}
+		}
+		return sb.toString();
 	}
 }

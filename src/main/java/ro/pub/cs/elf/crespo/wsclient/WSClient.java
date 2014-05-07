@@ -1,5 +1,7 @@
 package ro.pub.cs.elf.crespo.wsclient;
 
+import java.net.Inet4Address;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -18,7 +20,7 @@ public class WSClient extends SwingWorker<Void, User> {
 	private Mediator mediator;
 	private String endpoint;
 	private Service service;
-	private static String SEP = "|";
+	private static String SEP = "@";
 	private int DELAY = 3000;
 
 	public WSClient(Mediator mediator) {
@@ -33,14 +35,16 @@ public class WSClient extends SwingWorker<Void, User> {
 			call.setTargetEndpointAddress(new java.net.URL(endpoint));
 			call.setOperationName(new QName("registerUser"));
 
+			User me = mediator.getMe();
 			StringBuilder message = new StringBuilder();
-			message.append(mediator.getMe().getUserName());
-			message.append(SEP);
-			for (UserFile uf : mediator.getMe().getSharedFiles()) {
+			message.append(me.getUserName() + SEP);
+			message.append(me.getIpAddress().getHostAddress() + SEP);
+			message.append(me.getPort() + SEP);
+			for (UserFile uf : me.getSharedFiles()) {
 				message.append(uf.getName());
 				message.append(SEP);
 			}
-			call.invoke(new Object[]{message.toString()});
+			call.invoke(new Object[] { message.toString() });
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,8 +57,25 @@ public class WSClient extends SwingWorker<Void, User> {
 			Call call = (Call) service.createCall();
 			call.setTargetEndpointAddress(new java.net.URL(endpoint));
 			call.setOperationName(new QName("retrieveUsers"));
-			String ret = (String) call.invoke(new Object[] {});
-			System.out.println("#######\n" + ret);
+			String raw = (String) call.invoke(new Object[] { mediator.getMe()
+					.getUserName() });
+			
+			String[] rawUsers = raw.split(System.getProperty("line.separator"));
+			for (String rawUser : rawUsers) {
+				String[] userData = rawUser.split(SEP);
+				User user = new User(userData[0]);
+				user.setIpAddress((Inet4Address) Inet4Address
+						.getByName(userData[1]));
+				user.setPort(Integer.parseInt(userData[2]));
+
+				List<UserFile> sharedFiles = new ArrayList<UserFile>();
+				for (int idx = 3; idx < userData.length; idx++) {
+					sharedFiles.add(new UserFile(user, userData[idx]));
+				}
+				user.setSharedFiles(sharedFiles);
+
+				publish(user);
+			}
 			Thread.sleep(DELAY);
 		}
 	}
@@ -69,5 +90,4 @@ public class WSClient extends SwingWorker<Void, User> {
 			this.mediator.addUser(user);
 		}
 	}
-
 }
