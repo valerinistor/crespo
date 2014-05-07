@@ -59,7 +59,8 @@ public class WSClient extends SwingWorker<Void, User> {
 			call.setOperationName(new QName("retrieveUsers"));
 			String raw = (String) call.invoke(new Object[] { mediator.getMe()
 					.getUserName() });
-			
+			System.out.println(raw);
+
 			String[] rawUsers = raw.split(System.getProperty("line.separator"));
 			for (String rawUser : rawUsers) {
 				String[] userData = rawUser.split(SEP);
@@ -75,6 +76,7 @@ public class WSClient extends SwingWorker<Void, User> {
 				user.setSharedFiles(sharedFiles);
 
 				publish(user);
+				Thread.sleep(DELAY - 2500);
 			}
 			Thread.sleep(DELAY);
 		}
