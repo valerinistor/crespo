@@ -5,15 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
-
-import ro.pub.cs.elf.crespo.dto.User;
-import ro.pub.cs.elf.crespo.dto.UserFile;
-import ro.pub.cs.elf.crespo.mediator.Mediator;
+import javax.xml.namespace.QName;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
 
-import javax.xml.namespace.QName;
+import ro.pub.cs.elf.crespo.dto.User;
+import ro.pub.cs.elf.crespo.dto.UserFile;
+import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class WSClient extends SwingWorker<Void, User> {
 
@@ -62,6 +61,8 @@ public class WSClient extends SwingWorker<Void, User> {
 			System.out.println(raw);
 
 			String[] rawUsers = raw.split("~");
+			this.mediator.clearUserList();
+
 			for (String rawUser : rawUsers) {
 				String[] userData = rawUser.split(SEP);
 				if (userData[0].equals(mediator.getMe().getUserName())) {

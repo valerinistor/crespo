@@ -63,6 +63,10 @@ public class Mediator {
 		this.draw.getFileList().addFiles(files);
 	}
 
+	public void clearUserList() {
+		this.draw.getUserList().clearList();
+	}
+
 	/**
 	 * add new transfer to transfer table and also to network layer
 	 * 
