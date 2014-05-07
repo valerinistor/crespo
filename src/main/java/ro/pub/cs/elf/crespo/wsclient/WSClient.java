@@ -61,9 +61,13 @@ public class WSClient extends SwingWorker<Void, User> {
 					.getUserName() });
 			System.out.println(raw);
 
-			String[] rawUsers = raw.split(System.getProperty("line.separator"));
+			String[] rawUsers = raw.split("~");
 			for (String rawUser : rawUsers) {
 				String[] userData = rawUser.split(SEP);
+				if (userData[0].equals(mediator.getMe().getUserName())) {
+					continue;
+				}
+
 				User user = new User(userData[0]);
 				user.setIpAddress((Inet4Address) Inet4Address
 						.getByName(userData[1]));

@@ -1,5 +1,8 @@
 package ro.pub.cs.elf.crespo;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +16,24 @@ public class WS {
 	private static Map<String, Long> lastAccess = new HashMap<String, Long>();
 	private static final String SEP = "@";
 	private static boolean wiping = false;
+	private static BufferedWriter bw;
 
 	public void registerUser(String userData) throws IOException {
 		String userName = userData.substring(0, userData.indexOf(SEP));
 		String data = userData.substring(userData.indexOf(SEP) + 1);
+
+		File file = new File("/tmp/crespo.log");
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		FileWriter fw = new FileWriter(file, true);
+		bw = new BufferedWriter(fw);
+
+		bw.write("register user: " + userName + " : " +  data + "\n");
+		bw.close();
+
 		db.put(userName, data);
 		lastAccess.put(userName, System.currentTimeMillis());
 
@@ -41,14 +58,23 @@ public class WS {
 	}
 
 	public String retrieveUsers(String solicitant) throws IOException {
+		File file = new File("/tmp/crespo.log");
+
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+
+		FileWriter fw = new FileWriter(file, true);
+		bw = new BufferedWriter(fw);
+
 		lastAccess.put(solicitant, System.currentTimeMillis());
 		StringBuilder sb = new StringBuilder();
 		for (Map.Entry<String, String> e : db.entrySet()) {
-			if (!e.getKey().equals(solicitant)) {
-				sb.append(e.getKey() + SEP + e.getValue());
-				sb.append(System.getProperty("line.separator"));
-			}
+			sb.append(e.getKey() + SEP + e.getValue());
+			sb.append("~");
 		}
-		return sb.toString();
+		bw.write("return to " + solicitant + " ==> " + sb.toString().trim() +  "\n");
+		bw.close();
+		return sb.toString().trim();
 	}
 }
