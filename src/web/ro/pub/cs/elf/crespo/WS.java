@@ -12,30 +12,22 @@ import java.nio.file.Paths;
 
 public class WS {
 
-	private static String db = "database.txt";
+	private static File db = new File("database.txt");
 
-	public String registerUser(String... user) throws IOException {
-		File file = new File(db);
-
-		if (!file.exists()) {
-			file.createNewFile();
+	public void registerUser(String user) throws IOException {
+		if (!db.exists()) {
+			db.createNewFile();
 		}
-
-		FileWriter fw = new FileWriter(file.getAbsoluteFile());
+		FileWriter fw = new FileWriter(db.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
-		for (String s : user) {
-			bw.write(s + "|");
-		}
-		bw.write("\n");
+		bw.write(user);
 		bw.close();
-		return "mumu";
 	}
 
 	public void unregisterUser(String user) throws IOException {
-		File inputFile = new File(db);
-		File tempFile = new File(db + "temp");
+		File tempFile = new File(db.getAbsolutePath() + "temp");
 
-		BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+		BufferedReader reader = new BufferedReader(new FileReader(db));
 		BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
 
 		String currentLine;
@@ -48,11 +40,11 @@ public class WS {
 
 		reader.close();
 		writer.close();
-		tempFile.renameTo(inputFile);
+		tempFile.renameTo(db);
 	}
 
 	public String retrieveUsers() throws IOException {
-		return new String(Files.readAllBytes(Paths.get(db)),
+		return new String(Files.readAllBytes(Paths.get(db.getAbsolutePath())),
 				StandardCharsets.UTF_8);
 	}
 }

@@ -1,5 +1,5 @@
 *.class
 *.swp
-*.log
+*.log*
 bin
 build

@@ -1,6 +1,5 @@
 package ro.pub.cs.elf.crespo.wsclient;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.SwingWorker;
@@ -11,6 +10,7 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+
 import javax.xml.namespace.QName;
 
 public class WSClient extends SwingWorker<Void, User> {
@@ -18,7 +18,7 @@ public class WSClient extends SwingWorker<Void, User> {
 	private Mediator mediator;
 	private String endpoint;
 	private Service service;
-
+	private static String SEP = "|";
 	private int DELAY = 3000;
 
 	public WSClient(Mediator mediator) {
@@ -33,12 +33,14 @@ public class WSClient extends SwingWorker<Void, User> {
 			call.setTargetEndpointAddress(new java.net.URL(endpoint));
 			call.setOperationName(new QName("registerUser"));
 
-			ArrayList<String> message = new ArrayList<String>();
-			message.add(mediator.getMe().getUserName());
+			StringBuilder message = new StringBuilder();
+			message.append(mediator.getMe().getUserName());
+			message.append(SEP);
 			for (UserFile uf : mediator.getMe().getSharedFiles()) {
-				message.add(uf.getName());
+				message.append(uf.getName());
+				message.append(SEP);
 			}
-			call.invoke(message.toArray());
+			call.invoke(new Object[]{message.toString()});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
