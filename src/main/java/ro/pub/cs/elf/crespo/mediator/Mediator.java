@@ -63,10 +63,6 @@ public class Mediator {
 		this.draw.getFileList().addFiles(files);
 	}
 
-	public void clearUserList() {
-		this.draw.getUserList().clearList();
-	}
-
 	public void removeUser(User user) {
 		this.draw.getUserList().removeElement(user);
 	}

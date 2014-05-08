@@ -3,8 +3,10 @@ package ro.pub.cs.elf.crespo.wsclient;
 import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.SwingWorker;
 import javax.xml.namespace.QName;
@@ -23,6 +25,7 @@ public class WSClient extends SwingWorker<Void, User> {
 	private Service service;
 	private static String SEP = "@";
 	private int DELAY = 3000;
+	private Map<String, User> users = new HashMap<>();
 
 	public WSClient(Mediator mediator) {
 		this.mediator = mediator;
@@ -62,9 +65,8 @@ public class WSClient extends SwingWorker<Void, User> {
 					.getUserName() });
 			System.out.println(raw);
 
-			mediator.clearUserList();
-
 			String[] rawUsers = raw.split("~");
+			Set<String> userNames = new HashSet<>();
 			for (String rawUser : rawUsers) {
 				String[] userData = rawUser.split(SEP);
 				if (userData[0].equals(mediator.getMe().getUserName())) {
@@ -72,6 +74,7 @@ public class WSClient extends SwingWorker<Void, User> {
 				}
 
 				String userName = userData[0];
+				userNames.add(userName);
 				User user = new User(userName);
 				user.setIpAddress((Inet4Address) Inet4Address
 						.getByName(userData[1]));
@@ -83,8 +86,20 @@ public class WSClient extends SwingWorker<Void, User> {
 				}
 				user.setSharedFiles(sharedFiles);
 
-				publish(user);
-				Thread.sleep(300);
+				if(!users.containsKey(userName)) {
+					users.put(userName, user);
+					publish(user);
+					Thread.sleep(300);
+				}
+			}
+
+			for (Map.Entry<String, User> e : users.entrySet()) {
+				if(!userNames.contains(e.getKey())) {
+					Thread.sleep(300);
+					mediator.removeUser(users.get(e.getKey()));
+					System.out.println("remove " + users.get(e.getKey()));
+					users.remove(e.getKey());
+				}
 			}
 			Thread.sleep(DELAY);
 		}
