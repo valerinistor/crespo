@@ -67,6 +67,10 @@ public class Mediator {
 		this.draw.getUserList().clearList();
 	}
 
+	public void removeUser(User user) {
+		this.draw.getUserList().removeElement(user);
+	}
+
 	/**
 	 * add new transfer to transfer table and also to network layer
 	 * 

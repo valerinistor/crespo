@@ -2,7 +2,9 @@ package ro.pub.cs.elf.crespo.wsclient;
 
 import java.net.Inet4Address;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.SwingWorker;
 import javax.xml.namespace.QName;
@@ -60,16 +62,17 @@ public class WSClient extends SwingWorker<Void, User> {
 					.getUserName() });
 			System.out.println(raw);
 
-			String[] rawUsers = raw.split("~");
-			this.mediator.clearUserList();
+			mediator.clearUserList();
 
+			String[] rawUsers = raw.split("~");
 			for (String rawUser : rawUsers) {
 				String[] userData = rawUser.split(SEP);
 				if (userData[0].equals(mediator.getMe().getUserName())) {
 					continue;
 				}
 
-				User user = new User(userData[0]);
+				String userName = userData[0];
+				User user = new User(userName);
 				user.setIpAddress((Inet4Address) Inet4Address
 						.getByName(userData[1]));
 				user.setPort(Integer.parseInt(userData[2]));
@@ -81,7 +84,7 @@ public class WSClient extends SwingWorker<Void, User> {
 				user.setSharedFiles(sharedFiles);
 
 				publish(user);
-				Thread.sleep(DELAY - 2500);
+				Thread.sleep(300);
 			}
 			Thread.sleep(DELAY);
 		}
