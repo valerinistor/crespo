@@ -11,6 +11,8 @@ Dependencies
 - Swing
 - JUnit
 - Log4j
+- Apache Tomcat
+- Axis 1.4
 
 Build project
 -------------
@@ -20,7 +22,7 @@ Cuprins
 -------
 1. GUI
 2. Network
-3. Web Service + Web Service Client TODO
+3. Web Service + Web Service Client
 
 GUI
 ---
@@ -58,3 +60,15 @@ Fișierele sunt trimise (și respectiv primite) în chunk-uri folosind obiecte
 ByteBuffer. Prin mediator se realizează actualizarea interfeței grafice în funcție
 de procentul de upload/download al fișierelor. Actualizările se fac pe threaduri
 separate prin apeluri `SwingUtilities.invokeLater`.
+
+Web Service
+-----------
+####Server
+Serverul expune două metode:
+- registerUser: funcție apelată de client la pornirea programului pentru a se înregistra la baza de date
+- retrieveUsers: funcție apelată periodic de clienți (prin polling) pentru a primi ultima versiune a bazei de date și astfel a determina dacă există clienți care au apărut/dispărut
+
+Serverul ține de asemenea și un dicționar cu momentul ultimului polling al fiecărui client. Every once in a while, serverul compară ora curentă cu aceste intrări, iar dacă diferența este mai mare de o valoare prestabilită, consideră că acel utilizator a ieșit din program.
+
+####Client
+Clientul este un `SwingWorker` care în metoda `doInBackground` face poll. Prin perechea `publish` -> `process` se actualizează interfața grafică (doar dacă este nevoie) cu noile date primite de la server.
