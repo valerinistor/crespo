@@ -1,6 +1,6 @@
 <deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
 	<service name="UserService" provider="java:RPC">
-		<parameter name="className" value="ro.pub.cs.elf.crespo.WS" />
+		<parameter name="className" value="ro.pub.cs.elf.crespo.WSServer" />
 		<parameter name="allowedMethods" value="*"/>
 	</service>
 </deployment>

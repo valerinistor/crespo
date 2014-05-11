@@ -13,6 +13,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
+import org.apache.log4j.Logger;
 
 import ro.pub.cs.elf.crespo.dto.User;
 import ro.pub.cs.elf.crespo.dto.UserFile;
@@ -20,22 +21,29 @@ import ro.pub.cs.elf.crespo.mediator.Mediator;
 
 public class WSClient extends SwingWorker<Void, User> {
 
+	private Logger logger = Logger.getLogger(WSClient.class);
 	private Mediator mediator;
 	private String endpoint;
 	private Service service;
 	private static String SEP = "@";
 	private int DELAY = 3000;
-	private Map<String, User> users = new HashMap<>();
+	private Map<String, User> users;
 
 	public WSClient(Mediator mediator) {
 		this.mediator = mediator;
+		this.users = new HashMap<>();
 		this.endpoint = "http://" + mediator.getMe().getWsip()
 				+ ":8080/axis/services/UserService";
 		this.service = new Service();
+		registerMeToWebService();
+	}
 
-		Call call;
+	/**
+	 * Register logged user to web service
+	 */
+	private void registerMeToWebService() {
 		try {
-			call = (Call) service.createCall();
+			Call call = (Call) service.createCall();
 			call.setTargetEndpointAddress(new java.net.URL(endpoint));
 			call.setOperationName(new QName("registerUser"));
 
@@ -50,7 +58,7 @@ public class WSClient extends SwingWorker<Void, User> {
 			}
 			call.invoke(new Object[] { message.toString() });
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
 	}
 
@@ -63,7 +71,6 @@ public class WSClient extends SwingWorker<Void, User> {
 			call.setOperationName(new QName("retrieveUsers"));
 			String raw = (String) call.invoke(new Object[] { mediator.getMe()
 					.getUserName() });
-			System.out.println(raw);
 
 			String[] rawUsers = raw.split("~");
 			Set<String> userNames = new HashSet<>();
@@ -88,6 +95,7 @@ public class WSClient extends SwingWorker<Void, User> {
 
 				if(!users.containsKey(userName)) {
 					users.put(userName, user);
+					logger.info(String.format("user %s appear online", userName));
 					publish(user);
 					Thread.sleep(300);
 				}
@@ -95,12 +103,13 @@ public class WSClient extends SwingWorker<Void, User> {
 
 			for (Map.Entry<String, User> e : users.entrySet()) {
 				if(!userNames.contains(e.getKey())) {
-					Thread.sleep(300);
+					logger.info(String.format("user %s left offline", e.getKey()));
 					mediator.removeUser(users.get(e.getKey()));
-					System.out.println("remove " + users.get(e.getKey()));
 					users.remove(e.getKey());
+					Thread.sleep(300);
 				}
 			}
+
 			Thread.sleep(DELAY);
 		}
 	}

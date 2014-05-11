@@ -56,7 +56,7 @@ Pentru implementarea acestui nivel am separat logica în trei părți:
 infinită și ia decizii în funcție de tipul cheilor selectate. Serverul deține
 un pool de executori și pornește câte un Sender sau Receiver (ambele sunt obiecte
 de tip Thread) pentru a răspunde tuturor cererilor.
-Fișierele sunt trimise (și respectiv primite) în chunk-uri folosind obiecte 
+Fișierele sunt trimise (și respectiv primite) în chunk-uri folosind obiecte
 ByteBuffer. Prin mediator se realizează actualizarea interfeței grafice în funcție
 de procentul de upload/download al fișierelor. Actualizările se fac pe threaduri
 separate prin apeluri `SwingUtilities.invokeLater`.

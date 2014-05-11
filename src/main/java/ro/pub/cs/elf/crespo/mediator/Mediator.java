@@ -20,7 +20,7 @@ public class Mediator {
 	private Logger logger = Logger.getLogger(Mediator.class);
 	private Draw draw;
 	private User me; /* logged user */
-	private WSClient wsClient; /* swing worker which simulate Web Service */
+	private WSClient wsClient; /* swing worker which connects to Web Service */
 	private Network nwk;
 
 	public Mediator() {
@@ -63,6 +63,10 @@ public class Mediator {
 		this.draw.getFileList().addFiles(files);
 	}
 
+	/**
+	 * Remove from GUI a given user
+	 * @param user - user to remove from list
+	 */
 	public void removeUser(User user) {
 		this.draw.getUserList().removeElement(user);
 	}
